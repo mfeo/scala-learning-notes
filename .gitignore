@@ -1,0 +1,7 @@
+out/
+mill.*
+
+.bloop/
+.bsp/
+.metals/
+.scala-build/

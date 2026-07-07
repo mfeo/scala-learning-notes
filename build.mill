@@ -1,0 +1,8 @@
+import mill.*, scalalib.*
+
+object examples extends ScalaModule:
+  def scalaVersion = "3.3.3"
+
+  object test extends ScalaTests:
+    def mvnDeps = Seq(mvn"org.scalameta::munit:1.0.0")
+    def testFramework = "munit.Framework"
