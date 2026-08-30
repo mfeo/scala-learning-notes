@@ -172,7 +172,7 @@ val result = debug(10 + 20)  // 輸出: "10 + 20 = 30"
 // 優點:
 // - 型別安全
 // - 更清晰的 API
-// - 不需要分離編譯
+// - 巨集定義與呼叫端可位於同一專案，但不能在定義巨集的同一來源檔案中呼叫它
 ```
 
 ### 2.3 遷移指南
@@ -285,8 +285,10 @@ val good = requirePositive(10)  // OK
 // val bad = requirePositive(-5)  // 編譯錯誤!
 
 // 2. 型別操作
+import scala.compiletime.erasedValue
+
 inline def typeString[T]: String = {
-  constValue[T] match {
+  inline erasedValue[T] match {
     case _: Int => "Integer"
     case _: String => "Text"
     case _ => "Unknown"
@@ -302,15 +304,16 @@ inline def tupleSize[T <: Tuple]: Int = {
 
 val size = tupleSize[MyTuple]  // 3
 
-// 4. 求和型別 (Sum Types)
-sealed trait Color
-case object Red extends Color
-case object Green extends Color
-case object Blue extends Color
+// 4. 透過編譯器提供的 Mirror 處理總和型別
+import scala.deriving.Mirror
 
-inline def colorCount: Int = {
-  constValue[Tuple.Size[Tuple.Union[Color]]]
-}
+enum Color:
+  case Red, Green, Blue
+
+inline def enumSize[E](using m: Mirror.SumOf[E]): Int =
+  constValue[Tuple.Size[m.MirroredElemTypes]]
+
+val colorCount = enumSize[Color] // 3
 ```
 
 ---
@@ -950,18 +953,12 @@ def myMacroImpl[T: Type](expr: Expr[T])(using Quotes): Expr[T] = {
 ### 9.2 編譯器選項
 
 ```scala
-// 在 build.sbt 中啟用宏除錯
-scalacOptions ++= Seq(
-  "-Xprint:typer",           // 顯示型別檢查後的程式碼
-  "-Xprint-types",           // 顯示型別資訊
-  "-Vprint:all",             // 顯示所有編譯階段
-  "-Ycheck:all",             // 檢查所有階段
-  "-Xlog-implicits"          // 顯示隱式解析
-)
-
-// 只針對特定檔案
-scalacOptions ++= Seq(
-  "-Vprint-args", "MyMacro.scala"
+// 在 build.mill 的 ScalaModule 中加入編譯器診斷選項
+def scalacOptions = Seq(
+  "-Xprint:typer",  // 顯示型別檢查後的語法樹
+  "-Xprint-types",  // 包含型別資訊
+  "-Ycheck:all",    // 每個階段後檢查編譯器不變條件
+  "-Vimplicits"     // 說明隱式解析
 )
 ```
 

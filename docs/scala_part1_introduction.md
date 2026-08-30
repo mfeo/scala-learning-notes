@@ -186,7 +186,7 @@ sudo apt install openjdk-11-jdk
 
 ### 3.2 安裝 Scala
 
-#### 方式一: 使用 SDKMAN (推薦)
+#### 方式一: 使用 SDKMAN (替代方案)
 
 SDKMAN 是一個 JVM 生態系統的版本管理工具,支援 macOS、Linux 和 Windows (WSL)。
 
@@ -203,11 +203,8 @@ sdk version
 
 **3. 安裝 Scala**
 ```bash
-# 安裝最新版本
-sdk install scala
-
-# 或指定版本
-sdk install scala 3.3.1
+# 安裝本指南使用的版本
+sdk install scala 3.3.8
 ```
 
 **4. 安裝 sbt (Scala Build Tool)**
@@ -221,7 +218,7 @@ scala -version
 sbt --version
 ```
 
-#### 方式二: 使用 Coursier (新推薦方式)
+#### 方式二: 使用 Coursier (推薦)
 
 Coursier 是 Scala 官方推薦的安裝工具。
 
@@ -230,36 +227,21 @@ Coursier 是 Scala 官方推薦的安裝工具。
 curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz | gzip -d > cs
 chmod +x cs
 ./cs setup
+cs install scala:3.3.8
+cs install scalac:3.3.8
 ```
 
 **Windows**
 從 [Coursier 官網](https://get-coursier.io/docs/cli-installation) 下載安裝程式
 
-執行後會自動安裝:
-- JDK
-- Scala
-- sbt
-- 其他常用工具
+完成 setup 後，執行 `cs install scala:3.3.8` 與 `cs install scalac:3.3.8`，
+確保執行器及編譯器與本指南一致。
 
 #### 方式三: 手動安裝
 
-**macOS (使用 Homebrew)**
-```bash
-brew install scala
-brew install sbt
-```
-
-**Ubuntu/Debian**
-```bash
-sudo apt install scala
-echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
-curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add
-sudo apt update
-sudo apt install sbt
-```
-
-**Windows**
-從 [Scala 官網](https://www.scala-lang.org/download/) 下載安裝程式
+從 [Scala 3.3.8 官方版本頁](https://www.scala-lang.org/download/3.3.8.html) 下載
+Scala 3.3.8 binary。未指定版本的 Homebrew 或 Linux distribution package 可能安裝
+不同 Scala 版本，因此重現本指南時不要使用它們。
 
 ### 3.3 驗證安裝
 
@@ -270,7 +252,7 @@ java -version
 
 # 檢查 Scala
 scala -version
-# 應該看到類似: Scala code runner version 3.3.1
+# 應該看到類似: Scala code runner version 3.3.8
 
 # 檢查 sbt
 sbt --version
@@ -403,12 +385,12 @@ scala hello.scala Alice Bob
 #        - Bob
 ```
 
-### 5.3 使用 App trait (簡化版本)
+### 5.3 使用 main 方法
 
 ```scala
 // hello_app.scala
-object HelloApp extends App {
-  println("Hello from App!")
+@main def helloApp(args: String*): Unit = {
+  println("Hello from Scala 3!")
   println(s"參數: ${args.mkString(", ")}")
 }
 ```
@@ -474,7 +456,7 @@ name := "my-first-project"
 
 version := "0.1.0"
 
-scalaVersion := "3.3.1"
+scalaVersion := "3.3.8"
 
 // 依賴項
 libraryDependencies ++= Seq(
@@ -536,7 +518,7 @@ sbt test
 ```scala
 package example
 
-object Hello extends App {
+@main def hello(): Unit = {
   println("Hello, Scala!")
   
   def greet(name: String): String = {
@@ -595,7 +577,7 @@ libraryDependencies ++= Seq(
 "group-id" %% "artifact-id" % "version" % "configuration"
 
 // %% 會自動加上 Scala 版本號
-// 例如在 Scala 3.3.1 下:
+// 例如在 Scala 3.3.8 下:
 "org.scalatest" %% "scalatest" % "3.2.17"
 // 實際會下載: org.scalatest:scalatest_3:3.2.17
 
@@ -667,29 +649,7 @@ scala> :reset
 scala> :quit
 ```
 
-### 7.3 在 REPL 中使用函式庫
-
-**方式一: 使用 Ammonite (增強版 REPL)**
-
-安裝 Ammonite:
-```bash
-sudo sh -c '(echo "#!/usr/bin/env sh" && curl -L https://github.com/com-lihaoyi/Ammonite/releases/download/2.5.11/2.13-2.5.11) > /usr/local/bin/amm && chmod +x /usr/local/bin/amm'
-```
-
-使用 Ammonite:
-```scala
-// 啟動
-amm
-
-// 載入函式庫
-import $ivy.`com.lihaoyi::requests:0.8.0`
-
-// 使用
-val response = requests.get("https://api.github.com")
-println(response.text())
-```
-
-**方式二: 使用 scala-cli**
+### 7.3 使用 Scala CLI 載入函式庫
 
 安裝 scala-cli:
 ```bash
@@ -699,9 +659,10 @@ curl -sSLf https://scala-cli.virtuslab.org/get | sh
 使用:
 ```scala
 // 建立檔案 script.sc
+//> using scala "3.3.8"
 //> using lib "com.lihaoyi::requests:0.8.0"
 
-import requests._
+import requests.*
 
 val response = get("https://api.github.com")
 println(response.text())
@@ -760,7 +721,7 @@ def time[T](block: => T): T = {
 // TimeGreeting.scala
 import java.time.LocalTime
 
-object TimeGreeting extends App {
+@main def timeGreeting(): Unit = {
   val hour = LocalTime.now().getHour
   
   val greeting = hour match {
@@ -778,7 +739,7 @@ object TimeGreeting extends App {
 
 ```scala
 // Calculator.scala
-object Calculator extends App {
+@main def calculator(): Unit = {
   def calculate(a: Double, b: Double, op: String): Double = {
     op match {
       case "+" => a + b
@@ -814,7 +775,7 @@ sbt new scala/scala-seed.g8
 ```scala
 name := "calculator-project"
 version := "0.1.0"
-scalaVersion := "3.3.1"
+scalaVersion := "3.3.8"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.17" % Test
 ```

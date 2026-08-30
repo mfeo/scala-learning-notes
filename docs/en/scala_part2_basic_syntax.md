@@ -185,8 +185,8 @@ val doubleVal: Double = 3.14159   // 64-bit
 // Different ways to write numeric literals
 val decimal = 42
 val hex = 0x2A          // hexadecimal
-val binary = 0b101010   // binary (Scala 2.13+)
-val octal = 052         // octal (Scala 2)
+val binary = 0b101010   // binary literal, supported by Scala 3.3.8
+val octal = 42          // Scala 3 does not support legacy octal literals such as 052
 
 // Use underscores for readability
 val million = 1_000_000
@@ -1055,20 +1055,24 @@ while (input != "quit") {
 }
 ```
 
-### 6.4 do-while Loops
+### 6.4 Repeating a Body Before Testing
 
 ```scala
+// Scala 3 removed do-while syntax. Put the body in the while condition when
+// the body must execute before the condition is tested.
 var count = 0
-do {
+while {
   println(s"Count: $count")
   count += 1
-} while (count < 5)
+  count < 5
+} do ()
 
 // Executes at least once
 var x = 10
-do {
+while {
   println("Executed once")
-} while (x < 5)  // condition is false, but still executed once
+  x < 5
+} do ()  // condition is false, but the condition block executed once
 ```
 
 ### 6.5 Loop Control
@@ -1089,7 +1093,7 @@ def findFirst(numbers: List[Int], target: Int): Option[Int] = {
 
 **Using scala.util.control.Breaks:**
 ```scala
-import scala.util.control.Breaks._
+import scala.util.control.Breaks.*
 
 // break example
 breakable {
@@ -1289,7 +1293,7 @@ val data = {
 ### Exercise 1: Temperature Converter
 
 ```scala
-object TemperatureConverter extends App {
+@main def temperatureConverter(): Unit = {
   def celsiusToFahrenheit(c: Double): Double = {
     c * 9 / 5 + 32
   }
@@ -1318,7 +1322,7 @@ object TemperatureConverter extends App {
 ### Exercise 2: Grade Classification System
 
 ```scala
-object GradeSystem extends App {
+@main def gradeSystem(): Unit = {
   def getGrade(score: Int): String = {
     if (score < 0 || score > 100) {
       "Invalid score"
@@ -1358,7 +1362,7 @@ object GradeSystem extends App {
 ### Exercise 3: Simple Calculator
 
 ```scala
-object SimpleCalculator extends App {
+@main def simpleCalculator(): Unit = {
   def calculate(a: Double, b: Double, operator: String): Option[Double] = {
     operator match {
       case "+" => Some(a + b)
@@ -1394,7 +1398,7 @@ object SimpleCalculator extends App {
 The classic FizzBuzz problem:
 
 ```scala
-object FizzBuzz extends App {
+@main def runFizzBuzz(): Unit = {
   def fizzBuzz(n: Int): String = {
     if (n % 15 == 0) "FizzBuzz"
     else if (n % 3 == 0) "Fizz"
@@ -1420,7 +1424,7 @@ object FizzBuzz extends App {
 ### Exercise 5: Prime Number Check
 
 ```scala
-object PrimeChecker extends App {
+@main def primeChecker(): Unit = {
   def isPrime(n: Int): Boolean = {
     if (n <= 1) {
       false
@@ -1449,7 +1453,7 @@ object PrimeChecker extends App {
 ### Exercise 6: String Processing
 
 ```scala
-object StringProcessor extends App {
+@main def stringProcessor(): Unit = {
   // Count characters in a string
   def charCount(str: String): Map[Char, Int] = {
     str.groupBy(identity).view.mapValues(_.length).toMap
@@ -1483,7 +1487,7 @@ object StringProcessor extends App {
 ### Exercise 7: Sequence Generation
 
 ```scala
-object SequenceGenerator extends App {
+@main def sequenceGenerator(): Unit = {
   // Fibonacci sequence
   def fibonacci(n: Int): List[Int] = {
     def fib(count: Int, a: Int, b: Int, acc: List[Int]): List[Int] = {

@@ -77,12 +77,7 @@ def printMessage(msg: String): Unit = {
   println(msg)
 }
 
-// Unit and equals sign can be omitted
-def printMessage(msg: String) {
-  println(msg)
-}
-
-// But explicit notation is recommended
+// Scala 3 requires = before the method body
 def printMessage(msg: String): Unit = {
   println(msg)
 }
@@ -91,12 +86,10 @@ def printMessage(msg: String): Unit = {
 ### 1.4 Procedure Syntax
 
 ```scala
-// Old syntax (Scala 2.x, deprecated)
-def greet(name: String) {  // omitting = implies Unit return
-  println(s"Hello, $name")
-}
+// Scala 2 procedure syntax is not supported in normal Scala 3.3.8 mode:
+// def greet(name: String) { println(s"Hello, $name") }
 
-// New syntax (recommended)
+// Scala 3 syntax
 def greet(name: String): Unit = {
   println(s"Hello, $name")
 }
@@ -147,10 +140,9 @@ class Calculator {
 
 val calc = new Calculator
 
-// Convert a method to a function (using _ or explicit type)
+// Scala 3 performs eta expansion automatically
 val addFunc: (Int, Int) => Int = calc.add
-// or
-val addFunc2 = calc.add _
+val addFunc2 = calc.add
 
 // Can now be used like a function
 List(1, 2, 3).map(addFunc(_, 10))  // List(11, 12, 13)
@@ -235,7 +227,7 @@ printWithPrefix("Item", "apple", "banana", "cherry")
 
 // Passing a sequence to a varargs function
 val numbers = List(1, 2, 3, 4, 5)
-sum(numbers: _*)  // use :_* to expand the sequence
+sum(numbers*)  // use postfix * to expand the sequence
 ```
 
 ### 3.4 By-Name Parameters

@@ -1620,7 +1620,7 @@ object ValidationFramework {
   )
   
   object SignUpFormValidator {
-    import Validators._
+    import Validators.*
     
     val usernameValidator: Validator[String] = 
       nonEmpty("用戶名")

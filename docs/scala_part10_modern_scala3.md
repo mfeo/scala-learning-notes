@@ -1,6 +1,6 @@
-# Scala 教學 - 第十部分: Modern Scala 3
+# Scala 教學 - 第十部分：Modern Scala 3.3.8 LTS
 
-> [« 上一篇：宏](scala_part9_macros.md) | [📚 目錄](../README.md) | [下一篇：Mill 與可執行範例 »](scala_part11_mill_examples.md)
+> [« 上一篇：巨集](scala_part9_macros.md) | [📚 目錄](../README.md) | [下一篇：Mill 與可執行範例 »](scala_part11_mill_examples.md)
 
 ---
 
@@ -19,24 +19,112 @@
 
 ## 1. 為什麼需要 Modern Scala 3
 
-Scala 3 保留 Scala 的核心模型：簡潔語法、強型別、物件導向與函數式程式設計。實務上最大的差異，是許多 Scala 2 的隱式寫法現在有更清楚、更安全的語法。
+本指南以 Scala 3.3.8 LTS 為目標。LTS 是 Long-Term Support（長期支援），表示
+3.3 系列會比一般版本獲得更長期、以相容性為主的維護。Scala 3 保留靜態型別、
+物件導向與函數式程式設計等核心模型，同時加入更清楚的語法與更有表達力的型別系統。
 
-建議先讀完第八部分。第八部分說明 implicits 與 type classes 的概念，本章則示範新專案應優先使用的 Scala 3 寫法。
+主要改進包括 `given`／`using` 上下文抽象、extension method、enum、opaque type、
+export、型別類別衍生、新型別、可省略大括號、頂層定義及編譯期後設程式設計。
 
-主要語法更新：
-- `given` 定義上下文值。
-- `using` 要求上下文值。
-- `extension` 在不包裝型別的情況下新增方法。
-- `enum` 直接定義代數資料型別。
-- `opaque type` 建立零額外成本的領域型別。
-- `export` 轉發內部物件的成員。
-- `derives` 要求編譯器或函式庫產生 type class instances。
+### 1.1 語法與定義
+
+Scala 3.3.8 支援以縮排省略大括號、新控制結構語法、頂層定義、長定義使用的 `end`
+標記，以及 `@main` 程式進入點：
+
+```scala
+def classify(value: Int): String =
+  if value < 0 then "negative"
+  else if value == 0 then "zero"
+  else "positive"
+
+@main def hello(name: String): Unit =
+  println(s"Hello, $name")
+```
+
+類別通常可省略 `new` 建構，trait 可接受參數；若具體 class 預期從另一個來源檔案被
+繼承，就必須宣告成 `open`：
+
+```scala
+class User(val name: String)
+val user = User("Ada")
+
+trait Named(prefix: String):
+  def name: String
+  def displayName: String = s"$prefix$name"
+
+open class PublicBase
+```
+
+Scala 3 的 import、型別萬用字元及可變參數展開語法也更明確：
+
+```scala
+import java.time.{LocalDate as Date}
+import scala.collection.mutable.*
+
+val unknownNumbers: List[? <: Number] = List(Integer.valueOf(1))
+val values = List(1, 2, 3)
+val copied = List(values*)
+```
+
+英數字方法若預期用中綴形式呼叫，請加上 `infix`；符號方法可用 `@targetName` 提供
+穩定且方便 Java 呼叫的名稱：
+
+```scala
+import scala.annotation.targetName
+
+case class Count(value: Int)
+
+extension (left: Count)
+  infix def plus(right: Count): Count = Count(left.value + right.value)
+
+  @targetName("timesCount")
+  def *(factor: Int): Count = Count(left.value * factor)
+```
+
+### 1.2 新型別
+
+Scala 3.3.8 包含交集型別、聯集型別、型別 lambda、match type、相依函式型別與
+多型函式型別：
+
+```scala
+trait Resettable:
+  def reset(): Unit
+
+trait Closeable:
+  def close(): Unit
+
+def resetAndClose(value: Resettable & Closeable): Unit =
+  value.reset()
+  value.close()
+
+type StringOrInt = String | Int
+type MapValues[K] = [V] =>> Map[K, V]
+
+type Element[X] = X match
+  case String => Char
+  case Array[t] => t
+  case Iterable[t] => t
+
+trait Entry:
+  type Key
+  def key: Key
+
+val keyOf: (entry: Entry) => entry.Key =
+  (entry: Entry) => entry.key
+
+val identity: [A] => A => A =
+  [A] => (value: A) => value
+```
+
+標準 tuple 操作、match type，以及可適用於不同型別種類的 `Tuple` 與 `Function`
+抽象，讓泛型程式設計不再受 Scala 2 的 22 個元素上限限制。
 
 ---
 
 ## 2. given 與 using 的上下文抽象
 
-Scala 2 常使用 `implicit val`、`implicit def` 與 implicit parameter lists。Scala 3 保留相同概念，但語意更明確。
+Scala 2 常使用 `implicit val`、`implicit def` 與 implicit parameter list；
+Scala 3.3.8 以個別語法清楚表達各種用途。
 
 ```scala
 trait Show[A]:
@@ -51,36 +139,58 @@ given Show[String] with
 def render[A](value: A)(using show: Show[A]): String =
   show.show(value)
 
-val renderedNumber = render(42)
-val renderedText = render("Scala")
-```
-
-需要直接取得上下文值時，使用 `summon`：
-
-```scala
-def renderTwice[A](value: A)(using Show[A]): String =
-  val show = summon[Show[A]]
-  s"${show.show(value)}, ${show.show(value)}"
-```
-
-Context bounds 仍然可用：
-
-```scala
 def renderAll[A: Show](values: List[A]): List[String] =
   values.map(value => summon[Show[A]].show(value))
 ```
 
-建議：
-- 新的 Scala 3 程式碼優先使用 `given` 與 `using`。
-- given instances 盡量放在 type 或 type class 的 companion object 附近。
-- 除非 scope 很小且意圖明確，避免大量 wildcard import givens。
-- 當名稱能改善錯誤訊息或 API 可讀性時，替 given 命名。
+Given 匯入與一般萬用字元匯入分開：
+
+```scala
+object Formats:
+  given Show[Double] with
+    def show(value: Double): String = f"$value%.2f"
+
+import Formats.given
+```
+
+Context function 把可用的上下文納入函式型別；by-name context parameter 會延後求值，
+適合遞迴上下文定義：
+
+```scala
+trait Logger:
+  def log(message: String): Unit
+
+type Logged[A] = Logger ?=> A
+
+def announce(message: String): Logged[Unit] =
+  summon[Logger].log(message)
+
+def delayed(using logger: => Logger): Logger = logger
+```
+
+需要有意識地執行上下文轉換時，使用標準 `Conversion` 型別類別：
+
+```scala
+import scala.Conversion
+import scala.language.implicitConversions
+given Conversion[Int, String] = _.toString
+```
+
+啟用 `-language:strictEquality` 後，等值比較需要 `CanEqual` 證據；若嚴格等值比較符合
+領域設計，case class 與 enum 可衍生它：
+
+```scala
+case class UserId(value: String) derives CanEqual
+```
+
+Given 應放在所提供型別或型別類別的 companion object 附近、明確匯入，並避免範圍過廣
+的轉換。
 
 ---
 
 ## 3. Extension Methods
 
-Extension methods 取代許多 Scala 2 implicit class 的使用場景。
+Extension method 取代大多數 Scala 2 implicit class 使用場景：
 
 ```scala
 extension (text: String)
@@ -88,65 +198,44 @@ extension (text: String)
     text.trim.split("\\s+").toList.filter(_.nonEmpty)
 
   def titleCase: String =
-    words.map(word => word.head.toUpper + word.tail.toLowerCase).mkString(" ")
+    words.map(word => s"${word.head.toUpper}${word.tail.toLowerCase}").mkString(" ")
 
-val title = "modern scala 3".titleCase
-```
-
-泛型 extension methods 適合小而清楚的 API：
-
-```scala
 extension [A](values: List[A])
-  def secondOption: Option[A] =
-    values.drop(1).headOption
+  def secondOption: Option[A] = values.drop(1).headOption
 ```
 
-建議：
-- 用 extension methods 提升領域語意的可讀性。
-- 不要把所有 helper method 都變成 extension method。
-- 若需要 import，將 extension methods 放在命名清楚的 object 裡。
+Scala 3.3.8 也支援多型別參數的群組擴充、上下文參數、運算子擴充，以及名稱以 `:`
+結尾的右結合擴充。需匯入的擴充應放在名稱清楚的 object 中；若呼叫端沒有更易讀，
+則優先使用一般方法。
 
 ---
 
 ## 4. Enums
 
-Scala 3 enums 可以直接描述一組封閉的狀態。
+Enum 可表示簡單列舉及代數資料型別：
 
 ```scala
-enum OrderStatus:
+enum OrderStatus derives CanEqual:
   case Draft, Submitted, Paid, Cancelled
 
-def canPay(status: OrderStatus): Boolean =
-  status match
-    case OrderStatus.Submitted => true
-    case _ => false
-```
-
-Enums 也可以攜帶資料：
-
-```scala
-enum PaymentResult:
-  case Approved(transactionId: String)
+enum PaymentResult[+A]:
+  case Approved(value: A)
   case Declined(reason: String)
-  case RequiresReview(score: Int)
 
-def message(result: PaymentResult): String =
+def message(result: PaymentResult[String]): String =
   result match
     case PaymentResult.Approved(id) => s"Approved: $id"
     case PaymentResult.Declined(reason) => s"Declined: $reason"
-    case PaymentResult.RequiresReview(score) => s"Review score: $score"
 ```
 
-適合使用 enums 的情境：
-- 所有 cases 在編譯時已知。
-- exhaustive pattern matching 有價值。
-- 每個 case 都代表明確的業務狀態。
+Enum 可有參數、成員、泛型 case 及與 Java 相容的 case。所有替代情形可在編譯期得知，
+而且完整模式比對有價值時，適合使用 enum。
 
 ---
 
 ## 5. Opaque Types
 
-Opaque types 可以建立更強的領域型別，而且不增加執行時包裝成本。
+Opaque type alias 在不配置包裝物件的情況下建立抽象邊界：
 
 ```scala
 object Domain:
@@ -154,97 +243,131 @@ object Domain:
 
   object UserId:
     def from(value: String): Option[UserId] =
-      Option.when(value.nonEmpty)(value)
+      Option.when(value.trim.nonEmpty)(value.trim)
 
   extension (id: UserId)
     def value: String = id
 
 import Domain.*
-
-val id = UserId.from("u-123")
 ```
 
-在定義範圍之外，`UserId` 不等於 `String`。在定義範圍內，編譯器仍以 `String` 表示它。
-
-適合使用 opaque types 的情境：
-- identifiers。
-- validated values。
-- units of measure。
-- 小型領域型別，且 case class wrapper 顯得太重。
+在定義範圍外，`UserId` 與 `String` 不同；範圍內則可見其表示。Opaque alias 可為
+泛型、有界限、位於頂層或作為 class 成員。成員 opaque type 是 path-dependent type，
+因此兩個實例能以相同表示定義出不同抽象型別。
 
 ---
 
 ## 6. Exports
 
-`export` 可以轉發內部物件的指定成員。
+`export` 會建立轉發成員，支援選取、萬用字元、重新命名及 given 匯出：
 
 ```scala
 class UserService(repository: UserRepository):
-  export repository.findById
-  export repository.save
+  export repository.{findById, save}
+
+class PublicService(repository: UserRepository):
+  export repository.findById as findUser
 ```
 
-它適合用於 module composition，但不應該隱藏重要邊界。若方法需要額外行為或驗證，明確寫出 method 通常更好。
+Export 適合組合元件及建立 façade API。若轉發時必須加入驗證、授權或其他行為，請改用
+明確方法。
 
 ---
 
 ## 7. Derives
 
-`derives` 讓編譯器或函式庫產生 type class instances。
+`derives` 會向型別類別的 companion object 要求 `derived` 實作；編譯器提供描述欄位或
+替代情形的 `Mirror`：
 
 ```scala
-trait JsonEncoder[A]
+import scala.deriving.Mirror
+
+trait JsonEncoder[A]:
+  def encode(value: A): String
+
+object JsonEncoder:
+  def derived[A](using Mirror.Of[A]): JsonEncoder[A] =
+    new JsonEncoder[A]:
+      def encode(value: A): String = value.toString
 
 case class User(id: String, name: String) derives JsonEncoder
 ```
 
-實際 derivation 機制取決於 type class。Circe、Cats、Tapir 等函式庫都使用這類模式來減少重複樣板碼。
-
-適合使用 derivation 的情境：
-- 產生的 instance 行為明確且可預期。
-- 產生行為符合領域規則。
-- 特殊邊界條件仍有測試覆蓋。
+這是刻意簡化的範例；正式 encoder 會檢查 `MirroredElemTypes` 並遞迴取得 encoder。
+只有型別類別提供必要的 `derived` 方法，或編譯器像對 `CanEqual` 一樣提供特殊支援時，
+衍生才會成立。
 
 ---
 
 ## 8. 遷移注意事項
 
-常見 Scala 2 到 Scala 3 對應：
+### 8.1 常見語法變更
 
-| Scala 2 idiom | Scala 3 建議 |
+| Scala 2 寫法 | Scala 3.3.8 寫法 |
 |---|---|
-| `implicit val` instance | `given` instance |
-| implicit parameter list | `using` parameter list |
+| `implicit val` 或 `implicit object` | `given` |
+| implicit parameter list | `using` clause |
 | `implicitly[A]` | `summon[A]` |
-| implicit class syntax extension | `extension` method |
-| sealed trait plus case objects | `enum` |
-| value class wrapper | 只需型別區分時可考慮 `opaque type` |
+| implicit class | `extension` method |
+| `import a._`／`import a.{x => y}` | `import a.*`／`import a.{x as y}` |
+| `List[_]` 型別萬用字元 | `List[?]` |
+| `values: _*` | `values*` |
+| `method _` eta expansion | `method` |
+| `object Main extends App` | `@main def mainName(): Unit` |
+| 省略 `=` 的程序語法 | 加上 `=`，並最好明確標示回傳型別 |
+| `do ... while` | 條件為程式區塊的 `while` |
 
-遷移策略：
-1. 先保持行為不變。
-2. 將 implicit parameters 改成 `using`。
-3. 將 type class instances 改成 `given`。
-4. 將簡單 implicit classes 改成 extension methods。
-5. 只有在 API 影響可接受時，才把 sealed hierarchies 改成 enums。
+為了遷移，許多舊式 implicit 語法仍可使用，但解析與匯入會遵循 Scala 3 規則。新
+Scala 3.3.8 程式碼不應使用一般型別投影、存在型別、`DelayedInit`、early
+initializer、class shadowing、weak conformance、symbol literal、auto-application、
+auto-tupling、wildcard initializer、程序語法或 `do-while`。Package object 已由
+頂層定義取代；XML literal 需要獨立的 Scala XML 函式庫。`private[this]` 與
+nonlocal return 已棄用。
+
+### 8.2 其他 Scala 3.3.8 功能
+
+下列功能較專門，但都屬於 3.3 語言面，閱讀程式碼時應能辨識：
+
+- trait parameter、transparent trait 與 class、`open` class、universal apply method、
+  頂層定義、parameter untupling 及 kind polymorphism；
+- 透過 `Selectable` 實作的程式化 structural type、`Matchable` 標記，以及透過
+  `TypeTest` 執行的安全擦除型別測試；
+- 改進的 overload resolution、implicit resolution、型別推斷、pattern binding、
+  match 完整性、lazy val 初始化及字串插值跳脫檢查；
+- `@threadUnsafe` 可讓 lazy val 不使用執行緒安全初始化，以及 `0b1010` 等二進位字面值；
+- `-Yexplicit-nulls` 顯式空值與 `-Wsafe-init` 安全初始化警告；兩者在 Scala 3.3.8
+  都是選用檢查；
+- `inline`、`transparent inline`、編譯期操作、quote、splice 與 reflection 等
+  後設程式設計功能，詳見第九部分；TASTy inspection 可讓工具檢查已編譯程式碼中的
+  typed abstract syntax tree（帶型別抽象語法樹）。
+
+Scala 3.3.8 版本本身也加入 JDK 26 支援、`@uncheckedOverride`、
+`-Yfuture-lazy-vals` 相容性選項、局部程式碼覆蓋開關標記及 REPL 中斷處理改善。
+JDK 是 Java Development Kit（Java 開發工具套件）；REPL 是 Read-Eval-Print
+Loop（讀取、求值、輸出循環的互動式提示環境）。這些是版本能力，不是新的核心語法。
 
 ---
 
 ## 9. 實作練習
 
-1. 定義 `Show[A]` type class，並為 `Int`、`String`、`User` 提供 given instances。
-2. 為 `List[A]` 新增 extension methods：`secondOption`、`nonEmptyCount`、`mapToSet`。
-3. 建立至少四個狀態的 `CheckoutState` enum，並撰寫 exhaustive matcher。
-4. 建立 opaque `Email` type，驗證字串必須包含 `@`。
-5. 將第八部分的一個 Scala 2 implicit-class 範例改寫成 Scala 3 extension syntax。
+1. 定義 `Show[A]` 型別類別、given instance 及明確 given 匯入。
+2. 為 `List[A]` 新增 extension method，其中一個要求 `Ordering[A]` 上下文。
+3. 建立泛型 `CheckoutState[+A]` enum 並撰寫完整模式比對。
+4. 建立驗證 `@` 的 opaque `Email` 型別。
+5. 定義並使用聯集型別、交集型別及 match type。
+6. 透過 `Mirror` 衍生小型型別類別，並測試 product 與 sum type。
+7. 把第八部分的一個舊式 implicit class 範例遷移成 Scala 3.3.8 語法。
 
 ---
 
 ## 下一步
 
-讀完本章後，建議在真實專案裡練習這些語法：
+請在儲存庫的 Mill 專案中練習，並在閱讀本指南時維持編譯器版本為 `3.3.8`：
+
 - [第十一部分：Mill 與可執行範例](scala_part11_mill_examples.md)
 - [第十二部分：測試](scala_part12_testing.md)
+- [Scala 3 官方參考](https://docs.scala-lang.org/scala3/reference/)
 
 ---
 
-> [« 上一篇：宏](scala_part9_macros.md) | [📚 目錄](../README.md) | [下一篇：Mill 與可執行範例 »](scala_part11_mill_examples.md)
+> [« 上一篇：巨集](scala_part9_macros.md) | [📚 目錄](../README.md) | [下一篇：Mill 與可執行範例 »](scala_part11_mill_examples.md)

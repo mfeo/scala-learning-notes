@@ -186,7 +186,7 @@ Download and install from [AdoptOpenJDK](https://adoptopenjdk.net/)
 
 ### 3.2 Installing Scala
 
-#### Method 1: Using SDKMAN (Recommended)
+#### Method 1: Using SDKMAN (Alternative)
 
 SDKMAN is a version management tool for the JVM ecosystem, supporting macOS, Linux, and Windows (WSL).
 
@@ -203,11 +203,8 @@ sdk version
 
 **3. Install Scala**
 ```bash
-# Install the latest version
-sdk install scala
-
-# Or specify a version
-sdk install scala 3.3.1
+# Install the version used by this guide
+sdk install scala 3.3.8
 ```
 
 **4. Install sbt (Scala Build Tool)**
@@ -221,7 +218,7 @@ scala -version
 sbt --version
 ```
 
-#### Method 2: Using Coursier (New Recommended Method)
+#### Method 2: Using Coursier (Recommended)
 
 Coursier is the officially recommended Scala installation tool.
 
@@ -230,36 +227,22 @@ Coursier is the officially recommended Scala installation tool.
 curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz | gzip -d > cs
 chmod +x cs
 ./cs setup
+cs install scala:3.3.8
+cs install scalac:3.3.8
 ```
 
 **Windows**
 Download the installer from the [Coursier website](https://get-coursier.io/docs/cli-installation)
 
-Running it will automatically install:
-- JDK
-- Scala
-- sbt
-- Other commonly used tools
+After setup, run `cs install scala:3.3.8` and `cs install scalac:3.3.8` so the
+runner and compiler match this guide.
 
 #### Method 3: Manual Installation
 
-**macOS (using Homebrew)**
-```bash
-brew install scala
-brew install sbt
-```
-
-**Ubuntu/Debian**
-```bash
-sudo apt install scala
-echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
-curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add
-sudo apt update
-sudo apt install sbt
-```
-
-**Windows**
-Download the installer from the [Scala website](https://www.scala-lang.org/download/)
+Download the Scala 3.3.8 binaries from the
+[official Scala 3.3.8 release page](https://www.scala-lang.org/download/3.3.8.html).
+Unversioned Homebrew and Linux distribution packages may install a different
+Scala release, so do not use them when reproducing this guide.
 
 ### 3.3 Verifying the Installation
 
@@ -270,7 +253,7 @@ java -version
 
 # Check Scala
 scala -version
-# Should see something like: Scala code runner version 3.3.1
+# Should see something like: Scala code runner version 3.3.8
 
 # Check sbt
 sbt --version
@@ -403,12 +386,12 @@ scala hello.scala Alice Bob
 #           - Bob
 ```
 
-### 5.3 Using the App Trait (Simplified Version)
+### 5.3 Using a Main Method
 
 ```scala
 // hello_app.scala
-object HelloApp extends App {
-  println("Hello from App!")
+@main def helloApp(args: String*): Unit = {
+  println("Hello from Scala 3!")
   println(s"Arguments: ${args.mkString(", ")}")
 }
 ```
@@ -474,7 +457,7 @@ name := "my-first-project"
 
 version := "0.1.0"
 
-scalaVersion := "3.3.1"
+scalaVersion := "3.3.8"
 
 // Dependencies
 libraryDependencies ++= Seq(
@@ -536,7 +519,7 @@ sbt test
 ```scala
 package example
 
-object Hello extends App {
+@main def hello(): Unit = {
   println("Hello, Scala!")
   
   def greet(name: String): String = {
@@ -595,7 +578,7 @@ libraryDependencies ++= Seq(
 "group-id" %% "artifact-id" % "version" % "configuration"
 
 // %% automatically appends the Scala version number
-// For example, under Scala 3.3.1:
+// For example, under Scala 3.3.8:
 "org.scalatest" %% "scalatest" % "3.2.17"
 // Will actually download: org.scalatest:scalatest_3:3.2.17
 
@@ -667,29 +650,7 @@ scala> :reset
 scala> :quit
 ```
 
-### 7.3 Using Libraries in the REPL
-
-**Method 1: Using Ammonite (Enhanced REPL)**
-
-Install Ammonite:
-```bash
-sudo sh -c '(echo "#!/usr/bin/env sh" && curl -L https://github.com/com-lihaoyi/Ammonite/releases/download/2.5.11/2.13-2.5.11) > /usr/local/bin/amm && chmod +x /usr/local/bin/amm'
-```
-
-Using Ammonite:
-```scala
-// Start
-amm
-
-// Load a library
-import $ivy.`com.lihaoyi::requests:0.8.0`
-
-// Use it
-val response = requests.get("https://api.github.com")
-println(response.text())
-```
-
-**Method 2: Using scala-cli**
+### 7.3 Using Libraries with Scala CLI
 
 Install scala-cli:
 ```bash
@@ -699,9 +660,10 @@ curl -sSLf https://scala-cli.virtuslab.org/get | sh
 Usage:
 ```scala
 // Create the file script.sc
+//> using scala "3.3.8"
 //> using lib "com.lihaoyi::requests:0.8.0"
 
-import requests._
+import requests.*
 
 val response = get("https://api.github.com")
 println(response.text())
@@ -760,7 +722,7 @@ Create a program that greets the user based on the current time:
 // TimeGreeting.scala
 import java.time.LocalTime
 
-object TimeGreeting extends App {
+@main def timeGreeting(): Unit = {
   val hour = LocalTime.now().getHour
   
   val greeting = hour match {
@@ -778,7 +740,7 @@ object TimeGreeting extends App {
 
 ```scala
 // Calculator.scala
-object Calculator extends App {
+@main def calculator(): Unit = {
   def calculate(a: Double, b: Double, op: String): Double = {
     op match {
       case "+" => a + b
@@ -814,7 +776,7 @@ sbt new scala/scala-seed.g8
 ```scala
 name := "calculator-project"
 version := "0.1.0"
-scalaVersion := "3.3.1"
+scalaVersion := "3.3.8"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.17" % Test
 ```

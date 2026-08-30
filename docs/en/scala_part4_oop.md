@@ -316,14 +316,12 @@ println(MathUtils.gcd(48, 18))
 ### 3.3 Application Object
 
 ```scala
-object MyApp extends App {
+@main def myApp(args: String*): Unit = {
   println("Hello, Scala!")
-  
-  val args: Array[String] = args  // command-line arguments are accessible
   println(s"Args: ${args.mkString(", ")}")
 }
 
-// Or use the traditional main method
+// A Java-compatible main method is also supported
 object MyApp {
   def main(args: Array[String]): Unit = {
     println("Hello, Scala!")
@@ -1187,39 +1185,31 @@ class User {
   private[example] val companyId = "ABC"
   
   // visible only inside the User class
-  private[this] val secretKey = "XYZ"
+  private val secretKey = "XYZ"
 }
 
 class Admin extends User {
   def canAccess(): Unit = {
     println(internalId)  // OK
     println(companyId)   // OK
-    // println(secretKey)  // Error! private[this]
+    // println(secretKey)  // Error: private to User
   }
 }
 ```
 
-### 10.3 private[this]
+### 10.3 Object-Private Inference in Scala 3
+
+Scala 3.3.8 deprecates `private[this]`. Use `private`; the compiler infers when a
+member is only accessed through `this` and can apply the same optimization.
 
 ```scala
 class Counter {
-  private[this] var count = 0
+  private var count = 0
   
   def increment(): Unit = count += 1
   
   def isGreaterThan(other: Counter): Boolean = {
-    // count > other.count  // Error! Cannot access another instance's private[this]
-    true
-  }
-}
-
-class BetterCounter {
-  private var count = 0  // use private instead of private[this]
-  
-  def increment(): Unit = count += 1
-  
-  def isGreaterThan(other: BetterCounter): Boolean = {
-    count > other.count  // OK!
+    count > other.count  // class-private access is allowed
   }
 }
 ```
@@ -1325,7 +1315,7 @@ class Library {
 }
 
 // Test
-object LibrarySystem extends App {
+@main def librarySystem(): Unit = {
   val library = new Library
   
   // Add items
@@ -1476,7 +1466,7 @@ class Bank(val name: String) {
 }
 
 // Test
-object BankingSystem extends App {
+@main def bankingSystem(): Unit = {
   val bank = new Bank("MyBank")
   
   // Create customers
@@ -1676,7 +1666,7 @@ class Battle {
 }
 
 // Test
-object GameSystem extends App {
+@main def gameSystem(): Unit = {
   val warrior = new Warrior("Warrior", 100, 100, 10)
   val mage = new Mage("Mage", 70, 70, 100, 100)
   val healer = new Healer("Healer", 80, 80, 120, 120)
@@ -1816,7 +1806,7 @@ object ShapeFactory {
 }
 
 // Test
-object ShapeSystem extends App {
+@main def shapeSystem(): Unit = {
   println("=== Creating Shapes ===")
   val circle = ShapeFactory.createCircle(5.0)
   val square = ShapeFactory.createSquare(4.0)

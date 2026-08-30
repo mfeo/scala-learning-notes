@@ -77,12 +77,7 @@ def printMessage(msg: String): Unit = {
   println(msg)
 }
 
-// 可以省略 Unit 和等號
-def printMessage(msg: String) {
-  println(msg)
-}
-
-// 但推薦明確寫出
+// Scala 3 要求在方法本體前寫出 =
 def printMessage(msg: String): Unit = {
   println(msg)
 }
@@ -91,12 +86,10 @@ def printMessage(msg: String): Unit = {
 ### 1.4 程序 (Procedure) 語法
 
 ```scala
-// 舊式語法 (Scala 2.x,已廢棄)
-def greet(name: String) {  // 省略 = 表示返回 Unit
-  println(s"Hello, $name")
-}
+// 一般 Scala 3.3.8 模式不支援 Scala 2 的程序語法：
+// def greet(name: String) { println(s"Hello, $name") }
 
-// 新式語法 (推薦)
+// Scala 3 語法
 def greet(name: String): Unit = {
   println(s"Hello, $name")
 }
@@ -147,10 +140,9 @@ class Calculator {
 
 val calc = new Calculator
 
-// 方法轉換為函數 (使用 _ 或明確型別)
+// Scala 3 會自動執行 eta expansion
 val addFunc: (Int, Int) => Int = calc.add
-// 或
-val addFunc2 = calc.add _
+val addFunc2 = calc.add
 
 // 現在可以像函數一樣使用
 List(1, 2, 3).map(addFunc(_, 10))  // List(11, 12, 13)
@@ -235,7 +227,7 @@ printWithPrefix("Item", "apple", "banana", "cherry")
 
 // 傳遞序列給可變參數函數
 val numbers = List(1, 2, 3, 4, 5)
-sum(numbers: _*)  // 使用 :_* 展開序列
+sum(numbers*)  // 使用後置 * 展開序列
 ```
 
 ### 3.4 傳名參數 (By-Name Parameters)

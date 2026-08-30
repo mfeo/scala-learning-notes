@@ -26,9 +26,7 @@
 ### 1.1 集合層次結構
 
 ```
-Traversable
-    |
- Iterable
+Iterable
     |
     +--- Seq (有序)
     |     |
@@ -39,7 +37,7 @@ Traversable
     |     |
     |     +--- LinearSeq (快速頭尾操作)
     |           |--- List
-    |           +--- Stream/LazyList
+    |           +--- LazyList
     |
     +--- Set (無序、不重複)
     |     |--- HashSet
@@ -55,7 +53,7 @@ Traversable
 
 ```scala
 // 不可變集合 (預設、推薦)
-import scala.collection.immutable._
+import scala.collection.immutable.*
 
 val list = List(1, 2, 3)
 val set = Set(1, 2, 3)
@@ -1024,28 +1022,26 @@ val avgAgeByCity = people
 // Map(Taipei -> 25.0, Tokyo -> 30.0, Seoul -> 30.0)
 ```
 
-### 9.4 aggregate (平行聚合)
+### 9.4 單次走訪聚合
 
 ```scala
-// aggregate - 支援平行運算
 val numbers = List(1, 2, 3, 4, 5)
 
-val sum = numbers.aggregate(0)(
-  (acc, n) => acc + n,      // seqop: 組合單個元素
-  (acc1, acc2) => acc1 + acc2  // combop: 組合部分結果
-)
+val sum = numbers.foldLeft(0)(_ + _)
 // 15
 
 // 實用範例:計算平均值
 case class Average(sum: Double, count: Int)
 
-val avg = numbers.aggregate(Average(0, 0))(
-  (acc, n) => Average(acc.sum + n, acc.count + 1),
-  (acc1, acc2) => Average(acc1.sum + acc2.sum, acc1.count + acc2.count)
-)
+val avg = numbers.foldLeft(Average(0, 0)) { (acc, n) =>
+  Average(acc.sum + n, acc.count + 1)
+}
 
 avg.sum / avg.count  // 3.0
 ```
+
+Scala 3.3.8 使用 Scala 2.13 集合函式庫。平行集合由獨立的
+`scala-parallel-collections` 模組提供，而不是標準函式庫的 `List.aggregate`。
 
 ---
 
@@ -1848,7 +1844,7 @@ object DataTransformations {
 ### 核心操作
 - **轉換**: map, flatMap, collect
 - **過濾**: filter, filterNot, partition
-- **聚合**: sum, reduce, fold, aggregate
+- **聚合**: sum, reduce, fold, foldLeft
 - **查找**: find, exists, forall
 - **排序**: sorted, sortBy, sortWith
 

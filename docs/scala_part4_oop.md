@@ -316,14 +316,12 @@ println(MathUtils.gcd(48, 18))
 ### 3.3 應用程式物件
 
 ```scala
-object MyApp extends App {
+@main def myApp(args: String*): Unit = {
   println("Hello, Scala!")
-  
-  val args: Array[String] = args  // 可以存取命令列參數
   println(s"參數: ${args.mkString(", ")}")
 }
 
-// 或使用傳統的 main 方法
+// 也支援與 Java 相容的 main 方法
 object MyApp {
   def main(args: Array[String]): Unit = {
     println("Hello, Scala!")
@@ -1187,39 +1185,31 @@ class User {
   private[example] val companyId = "ABC"
   
   // 只在 User 類別內可見
-  private[this] val secretKey = "XYZ"
+  private val secretKey = "XYZ"
 }
 
 class Admin extends User {
   def canAccess(): Unit = {
     println(internalId)  // OK
     println(companyId)   // OK
-    // println(secretKey)  // 錯誤!private[this]
+    // println(secretKey)  // 錯誤：User 的 private 成員
   }
 }
 ```
 
-### 10.3 private[this]
+### 10.3 Scala 3 的物件私有推斷
+
+Scala 3.3.8 已棄用 `private[this]`。請使用 `private`；編譯器會推斷成員是否只透過
+`this` 存取，並套用相同最佳化。
 
 ```scala
 class Counter {
-  private[this] var count = 0
+  private var count = 0
   
   def increment(): Unit = count += 1
   
   def isGreaterThan(other: Counter): Boolean = {
-    // count > other.count  // 錯誤!不能存取其他實例的 private[this]
-    true
-  }
-}
-
-class BetterCounter {
-  private var count = 0  // 使用 private 而非 private[this]
-  
-  def increment(): Unit = count += 1
-  
-  def isGreaterThan(other: BetterCounter): Boolean = {
-    count > other.count  // OK!
+    count > other.count  // 允許類別私有存取
   }
 }
 ```
@@ -1325,7 +1315,7 @@ class Library {
 }
 
 // 測試
-object LibrarySystem extends App {
+@main def librarySystem(): Unit = {
   val library = new Library
   
   // 新增項目
@@ -1476,7 +1466,7 @@ class Bank(val name: String) {
 }
 
 // 測試
-object BankingSystem extends App {
+@main def bankingSystem(): Unit = {
   val bank = new Bank("MyBank")
   
   // 建立客戶
@@ -1676,7 +1666,7 @@ class Battle {
 }
 
 // 測試
-object GameSystem extends App {
+@main def gameSystem(): Unit = {
   val warrior = new Warrior("戰士", 100, 100, 10)
   val mage = new Mage("法師", 70, 70, 100, 100)
   val healer = new Healer("牧師", 80, 80, 120, 120)
@@ -1816,7 +1806,7 @@ object ShapeFactory {
 }
 
 // 測試
-object ShapeSystem extends App {
+@main def shapeSystem(): Unit = {
   println("=== 建立形狀 ===")
   val circle = ShapeFactory.createCircle(5.0)
   val square = ShapeFactory.createSquare(4.0)

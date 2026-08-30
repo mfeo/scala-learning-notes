@@ -1,4 +1,4 @@
-# Scala Tutorial - Part 10: Modern Scala 3
+# Scala Tutorial - Part 10: Modern Scala 3.3.8 LTS
 
 > [📚 Table of Contents](../../README.md) | [« Prev: Macros](scala_part9_macros.md) | [Next: Mill & Runnable Examples »](scala_part11_mill_examples.md)
 
@@ -19,24 +19,118 @@
 
 ## 1. Why Modern Scala 3 Matters
 
-Scala 3 keeps the core Scala model: concise syntax, strong static typing, object-oriented programming, and functional programming. The biggest practical change is that several Scala 2 idioms now have clearer names and safer syntax.
+This guide targets Scala 3.3.8 LTS. LTS means Long-Term Support: the 3.3 line
+receives compatibility-focused maintenance for longer than ordinary releases.
+Scala 3 keeps the core Scala model—static typing, object-oriented programming,
+and functional programming—but adds clearer syntax and a more expressive type
+system.
 
-Use this chapter after learning Part 8. Part 8 explains the concepts behind implicits and type classes. This chapter shows the Scala 3 syntax you should prefer in new code.
+Key upgrades include contextual abstractions with `given` and `using`, extension
+methods, enums, opaque types, exports, type class derivation, new types, optional
+braces, top-level definitions, and principled compile-time metaprogramming.
 
-Key upgrades:
-- `given` defines contextual values.
-- `using` requests contextual values.
-- `extension` adds methods to existing types without wrapper classes.
-- `enum` defines algebraic data types directly.
-- `opaque type` creates zero-overhead domain types.
-- `export` forwards members from an internal object.
-- `derives` asks the compiler or a library to derive type class instances.
+### 1.1 Syntax and Definitions
+
+Scala 3.3.8 supports indentation-based optional braces, new control syntax,
+top-level definitions, `end` markers for long definitions, and `@main` entry
+points:
+
+```scala
+def classify(value: Int): String =
+  if value < 0 then "negative"
+  else if value == 0 then "zero"
+  else "positive"
+
+@main def hello(name: String): Unit =
+  println(s"Hello, $name")
+```
+
+Classes can normally be constructed without `new`, traits can take parameters,
+and a concrete class intended for extension from another source file must be
+declared `open`:
+
+```scala
+class User(val name: String)
+val user = User("Ada")
+
+trait Named(prefix: String):
+  def name: String
+  def displayName: String = s"$prefix$name"
+
+open class PublicBase
+```
+
+Scala 3 import, wildcard-type, and vararg-splice syntax is also more explicit:
+
+```scala
+import java.time.{LocalDate as Date}
+import scala.collection.mutable.*
+
+val unknownNumbers: List[? <: Number] = List(Integer.valueOf(1))
+val values = List(1, 2, 3)
+val copied = List(values*)
+```
+
+Use `infix` for alphanumeric methods intended for infix calls, and give symbolic
+methods a stable Java-facing name with `@targetName`:
+
+```scala
+import scala.annotation.targetName
+
+case class Count(value: Int)
+
+extension (left: Count)
+  infix def plus(right: Count): Count = Count(left.value + right.value)
+
+  @targetName("timesCount")
+  def *(factor: Int): Count = Count(left.value * factor)
+```
+
+### 1.2 New Types
+
+Scala 3.3.8 includes intersection types, union types, type lambdas, match types,
+dependent function types, and polymorphic function types:
+
+```scala
+trait Resettable:
+  def reset(): Unit
+
+trait Closeable:
+  def close(): Unit
+
+def resetAndClose(value: Resettable & Closeable): Unit =
+  value.reset()
+  value.close()
+
+type StringOrInt = String | Int
+type MapValues[K] = [V] =>> Map[K, V]
+
+type Element[X] = X match
+  case String => Char
+  case Array[t] => t
+  case Iterable[t] => t
+
+trait Entry:
+  type Key
+  def key: Key
+
+val keyOf: (entry: Entry) => entry.Key =
+  (entry: Entry) => entry.key
+
+val identity: [A] => A => A =
+  [A] => (value: A) => value
+```
+
+The standard tuple operations, match types, and kind-polymorphic `Tuple` and
+`Function` abstractions allow generic programming without the Scala 2 limit of
+22 elements.
 
 ---
 
 ## 2. Contextual Abstractions with given and using
 
-Scala 2 code often used `implicit val`, `implicit def`, and implicit parameter lists. Scala 3 keeps the same idea but separates intent more clearly.
+Scala 2 code often used `implicit val`, `implicit def`, and implicit parameter
+lists. Scala 3.3.8 separates each intent with dedicated syntax.
 
 ```scala
 trait Show[A]:
@@ -51,36 +145,60 @@ given Show[String] with
 def render[A](value: A)(using show: Show[A]): String =
   show.show(value)
 
-val renderedNumber = render(42)
-val renderedText = render("Scala")
-```
-
-Use `summon` when you need to access a contextual value directly:
-
-```scala
-def renderTwice[A](value: A)(using Show[A]): String =
-  val show = summon[Show[A]]
-  s"${show.show(value)}, ${show.show(value)}"
-```
-
-Context bounds still work:
-
-```scala
 def renderAll[A: Show](values: List[A]): List[String] =
   values.map(value => summon[Show[A]].show(value))
 ```
 
-Guidelines:
-- Prefer `given` and `using` in new Scala 3 code.
-- Keep given instances close to the type or type class companion object.
-- Avoid broad wildcard imports of givens unless the scope is intentionally small.
-- Name givens when the name improves diagnostics or API clarity.
+Given imports are separate from ordinary wildcard imports:
+
+```scala
+object Formats:
+  given Show[Double] with
+    def show(value: Double): String = f"$value%.2f"
+
+import Formats.given
+```
+
+Context functions make an available context part of a function type. A by-name
+context parameter delays evaluation and is useful for recursive contextual
+definitions:
+
+```scala
+trait Logger:
+  def log(message: String): Unit
+
+type Logged[A] = Logger ?=> A
+
+def announce(message: String): Logged[Unit] =
+  summon[Logger].log(message)
+
+def delayed(using logger: => Logger): Logger = logger
+```
+
+Use the standard `Conversion` type class for intentional contextual conversions:
+
+```scala
+import scala.Conversion
+import scala.language.implicitConversions
+
+given Conversion[Int, String] = _.toString
+```
+
+With `-language:strictEquality`, equality requires `CanEqual` evidence. Case
+classes and enums can derive it when strict equality is part of the design:
+
+```scala
+case class UserId(value: String) derives CanEqual
+```
+
+Keep givens near the companion object of the provided type or type class, import
+givens explicitly, and avoid broad conversions.
 
 ---
 
 ## 3. Extension Methods
 
-Extension methods replace many Scala 2 implicit class use cases.
+Extension methods replace most Scala 2 implicit-class use cases:
 
 ```scala
 extension (text: String)
@@ -88,65 +206,46 @@ extension (text: String)
     text.trim.split("\\s+").toList.filter(_.nonEmpty)
 
   def titleCase: String =
-    words.map(word => word.head.toUpper + word.tail.toLowerCase).mkString(" ")
+    words.map(word => s"${word.head.toUpper}${word.tail.toLowerCase}").mkString(" ")
 
-val title = "modern scala 3".titleCase
-```
-
-Generic extension methods are useful for small, focused APIs:
-
-```scala
 extension [A](values: List[A])
-  def secondOption: Option[A] =
-    values.drop(1).headOption
+  def secondOption: Option[A] = values.drop(1).headOption
 ```
 
-Guidelines:
-- Use extension methods for domain-specific readability.
-- Avoid making every helper method an extension method.
-- Keep extension methods in clearly named objects when they must be imported.
+Scala 3.3.8 also supports collective extensions with multiple type parameters,
+context parameters, operator extensions, and right-associative extensions whose
+names end in `:`. Keep imported extensions in clearly named objects and prefer a
+normal method when extension syntax does not improve the caller's code.
 
 ---
 
 ## 4. Enums
 
-Scala 3 enums are a direct way to model a closed set of alternatives.
+Enums model both simple enumerations and algebraic data types:
 
 ```scala
-enum OrderStatus:
+enum OrderStatus derives CanEqual:
   case Draft, Submitted, Paid, Cancelled
 
-def canPay(status: OrderStatus): Boolean =
-  status match
-    case OrderStatus.Submitted => true
-    case _ => false
-```
-
-Enums can also carry data:
-
-```scala
-enum PaymentResult:
-  case Approved(transactionId: String)
+enum PaymentResult[+A]:
+  case Approved(value: A)
   case Declined(reason: String)
-  case RequiresReview(score: Int)
 
-def message(result: PaymentResult): String =
+def message(result: PaymentResult[String]): String =
   result match
     case PaymentResult.Approved(id) => s"Approved: $id"
     case PaymentResult.Declined(reason) => s"Declined: $reason"
-    case PaymentResult.RequiresReview(score) => s"Review score: $score"
 ```
 
-Use enums for algebraic data types when:
-- all cases are known at compile time;
-- exhaustive pattern matching is useful;
-- each case represents a meaningful business state.
+Enums may have parameters, members, generic cases, and Java-compatible cases.
+Use them when all alternatives are known at compile time and exhaustive pattern
+matching is valuable.
 
 ---
 
 ## 5. Opaque Types
 
-Opaque types provide stronger domain types without runtime allocation.
+Opaque type aliases provide an abstraction boundary without allocating a wrapper:
 
 ```scala
 object Domain:
@@ -154,96 +253,140 @@ object Domain:
 
   object UserId:
     def from(value: String): Option[UserId] =
-      Option.when(value.nonEmpty)(value)
+      Option.when(value.trim.nonEmpty)(value.trim)
 
   extension (id: UserId)
     def value: String = id
 
 import Domain.*
-
-val id = UserId.from("u-123")
 ```
 
-Outside the defining scope, `UserId` is not the same as `String`. Inside the defining scope, the compiler still represents it as a `String`.
-
-Use opaque types for:
-- identifiers;
-- validated values;
-- units of measure;
-- small domain types where a case class wrapper would be noisy.
+Outside the defining scope, `UserId` is distinct from `String`; inside it, the
+representation is visible. Opaque aliases can be generic, bounded, top-level, or
+members of a class. A member opaque type is path-dependent, so two instances can
+define distinct abstract types with the same representation.
 
 ---
 
 ## 6. Exports
 
-`export` forwards selected members from an inner object.
+`export` creates forwarding members and supports selection, wildcard export,
+renaming, and given export:
 
 ```scala
 class UserService(repository: UserRepository):
-  export repository.findById
-  export repository.save
+  export repository.{findById, save}
+
+class PublicService(repository: UserRepository):
+  export repository.findById as findUser
 ```
 
-This is useful when composing modules, but it should not hide important boundaries. Prefer explicit methods when behavior or validation is added.
+Exports are useful for composition and façade APIs. Prefer explicit methods when
+forwarding must add validation, authorization, or other behavior.
 
 ---
 
 ## 7. Derives
 
-`derives` lets the compiler or a library generate type class instances.
+`derives` asks a type class companion object for a `derived` implementation. The
+compiler supplies a `Mirror` describing the fields or alternatives of the type:
 
 ```scala
-trait JsonEncoder[A]
+import scala.deriving.Mirror
+
+trait JsonEncoder[A]:
+  def encode(value: A): String
+
+object JsonEncoder:
+  def derived[A](using Mirror.Of[A]): JsonEncoder[A] =
+    new JsonEncoder[A]:
+      def encode(value: A): String = value.toString
 
 case class User(id: String, name: String) derives JsonEncoder
 ```
 
-The actual derivation mechanism depends on the type class. Libraries such as Circe, Cats, and Tapir use this pattern to reduce repetitive boilerplate.
-
-Use derivation when:
-- the derived instance is obvious and predictable;
-- generated behavior matches your domain rules;
-- custom edge cases are still tested.
+The example is deliberately small; a production encoder would inspect
+`MirroredElemTypes` and recursively summon encoders. Derivation only works when
+the type class provides the required `derived` method or the compiler has
+special support, as it does for `CanEqual`.
 
 ---
 
 ## 8. Migration Notes
 
-Common Scala 2 to Scala 3 mappings:
+### 8.1 Common Syntax Changes
 
-| Scala 2 idiom | Scala 3 preference |
+| Scala 2 idiom | Scala 3.3.8 form |
 |---|---|
-| `implicit val` instance | `given` instance |
-| implicit parameter list | `using` parameter list |
+| `implicit val` or `implicit object` | `given` |
+| implicit parameter list | `using` clause |
 | `implicitly[A]` | `summon[A]` |
-| implicit class syntax extension | `extension` method |
-| sealed trait plus case objects | `enum` |
-| value class wrapper | `opaque type` when only type distinction is needed |
+| implicit class | `extension` method |
+| `import a._` / `import a.{x => y}` | `import a.*` / `import a.{x as y}` |
+| `List[A]` wildcard written as `List[_]` | `List[?]` |
+| `values: _*` | `values*` |
+| `method _` eta expansion | `method` |
+| `object Main extends App` | `@main def mainName(): Unit` |
+| procedure syntax without `=` | add `=` and preferably an explicit result type |
+| `do ... while` | a `while` whose condition is a block |
 
-Migration strategy:
-1. Keep behavior unchanged first.
-2. Convert implicit parameters to `using`.
-3. Convert type class instances to `given`.
-4. Replace simple implicit classes with extension methods.
-5. Convert sealed hierarchies to enums only when the API impact is acceptable.
+Old implicit syntax remains available for migration in many cases, but its
+resolution and import behavior follows Scala 3 rules. General type projection,
+existential types, `DelayedInit`, early initializers, class shadowing, weak
+conformance, symbol literals, auto-application, auto-tupling, wildcard
+initializers, procedure syntax, and `do-while` should not appear in new Scala
+3.3.8 code. Package objects are superseded by top-level definitions, and XML
+literals require the separate Scala XML library. `private[this]` and nonlocal
+returns are deprecated.
+
+### 8.2 Additional Scala 3.3.8 Features
+
+The following features are more specialized but are part of the 3.3 language
+surface and should be recognized when reading code:
+
+- trait parameters, transparent traits and classes, `open` classes, universal apply methods,
+  top-level definitions, parameter untupling, and kind polymorphism;
+- programmatic structural types through `Selectable`, the `Matchable` marker,
+  and safe erased type tests through `TypeTest`;
+- improved overload resolution, implicit resolution, type inference, pattern
+  bindings, match exhaustivity, lazy-value initialization, and interpolator
+  escape checking;
+- `@threadUnsafe` for opting a lazy value out of thread-safe initialization and
+  binary integer literals such as `0b1010`;
+- explicit nulls with `-Yexplicit-nulls` and safe initialization warnings with
+  `-Wsafe-init`; both are opt-in checks in Scala 3.3.8;
+- `inline`, `transparent inline`, compile-time operations, quotes, splices, and
+  reflection for metaprogramming, covered in Part 9; TASTy inspection lets tools
+  inspect the compiler's typed abstract syntax trees from compiled code.
+
+Scala 3.3.8 itself also adds JDK 26 support, `@uncheckedOverride`, the
+`-Yfuture-lazy-vals` compatibility option, local coverage on/off markers, and
+REPL interrupt handling improvements. JDK means Java Development Kit, and REPL
+means Read-Eval-Print Loop, the interactive Scala prompt. These are release
+capabilities rather than new core Scala 3 syntax.
 
 ---
 
 ## 9. Practice Exercises
 
-1. Define a `Show[A]` type class with given instances for `Int`, `String`, and a `User` case class.
-2. Add extension methods for `List[A]`: `secondOption`, `nonEmptyCount`, and `mapToSet`.
-3. Model a `CheckoutState` enum with at least four states and write an exhaustive matcher.
+1. Define a `Show[A]` type class with given instances and explicit given imports.
+2. Add extension methods for `List[A]`, including one that requires an `Ordering[A]` context.
+3. Model a generic `CheckoutState[+A]` enum and write an exhaustive matcher.
 4. Create an opaque `Email` type that validates the presence of `@`.
-5. Refactor one Scala 2 implicit-class example from Part 8 into Scala 3 extension syntax.
+5. Define and use a union type, an intersection type, and a match type.
+6. Derive a small type class through `Mirror`, then test product and sum types.
+7. Migrate one legacy implicit-class example from Part 8 to Scala 3.3.8 syntax.
 
 ---
 
 ## Next Steps
 
-After this chapter, practice the syntax in a real project:
+Practice the syntax in the repository's Mill project and keep the compiler
+version at `3.3.8` while following this guide:
+
 - [Part 11: Mill & Runnable Examples](scala_part11_mill_examples.md)
 - [Part 12: Testing](scala_part12_testing.md)
+- [Official Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/)
 
 ---
 

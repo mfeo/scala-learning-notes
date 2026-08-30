@@ -20,6 +20,11 @@
 
 ## 1. Overview of the Implicit System
 
+This chapter explains the legacy Scala 2 implicit syntax because it remains
+important when migrating existing code. Scala 3.3.8 still accepts most of this
+syntax for compatibility, but new code should use the `given`, `using`,
+`extension`, and `Conversion` forms introduced in Part 10.
+
 ### 1.1 What Are Implicits?
 
 ```scala
@@ -56,9 +61,11 @@ def process(data: String)(implicit config: Config): String = {
   data.toUpperCase
 }
 
-// 2. Implicit Conversions
-//    - Automatic type conversion
-implicit def intToString(x: Int): String = x.toString
+// 2. Contextual Conversions
+//    - Automatic type conversion, expressed explicitly in Scala 3
+import scala.Conversion
+import scala.language.implicitConversions
+given Conversion[Int, String] = _.toString
 val s: String = 42  // automatically converted to "42"
 
 // 3. Implicit Classes
@@ -182,8 +189,10 @@ greetDefault("Alice")  // always "Hello, Alice!"
 ### 3.1 Basic Implicit Conversions
 
 ```scala
-// Define an implicit conversion
-implicit def intToString(x: Int): String = x.toString
+// Define a Scala 3 contextual conversion
+import scala.Conversion
+import scala.language.implicitConversions
+given Conversion[Int, String] = _.toString
 
 // Use the implicit conversion
 val s: String = 42  // compiler inserts: intToString(42)
@@ -194,9 +203,7 @@ printString(123)  // automatically converted
 // A more practical example: date handling
 import java.time.LocalDate
 
-implicit def stringToDate(s: String): LocalDate = {
-  LocalDate.parse(s)
-}
+given Conversion[String, LocalDate] = LocalDate.parse(_)
 
 def daysBetween(start: LocalDate, end: LocalDate): Long = {
   java.time.temporal.ChronoUnit.DAYS.between(start, end)
@@ -222,10 +229,10 @@ implicit def intToFloat(x: Int): Float = x.toFloat
 
 // val d: Number = 42  // Compile error: ambiguous!
 
-// Therefore, Scala 2.13+ recommends:
-// - Avoid using implicit conversions
-// - Use implicit classes instead (see next section)
-// - Use explicit conversion methods
+// For Scala 3.3.8:
+// - Prefer explicit conversion methods when conversion could be surprising
+// - Otherwise define a narrow given Conversion[A, B]
+// - Use extension methods, not implicit classes, to add operations
 ```
 
 ### 3.3 View Bounds (Deprecated)
@@ -234,10 +241,10 @@ implicit def intToFloat(x: Int): Float = x.toFloat
 // Scala 2.x View Bounds - deprecated
 // def process[T <% String](value: T): String = value
 
-// Modern approach: use an implicit conversion function
-def process[T](value: T)(implicit conv: T => String): String = conv(value)
+// Scala 3 approach: request Conversion explicitly
+def process[T](value: T)(using conv: Conversion[T, String]): String = conv(value)
 
-implicit def intToStr(x: Int): String = x.toString
+given Conversion[Int, String] = _.toString
 process(42)  // "42"
 ```
 
@@ -246,6 +253,9 @@ process(42)  // "42"
 ## 4. Implicit Classes
 
 ### 4.1 Basic Usage
+
+The following is legacy compatibility syntax. For Scala 3.3.8 code, prefer the
+`extension` syntax in Part 10.
 
 ```scala
 // Implicit classes extend existing types
@@ -614,7 +624,7 @@ object Implicits {
 }
 
 def example2(): Unit = {
-  import Implicits._
+  import Implicits.*
   
   def needsGreeting(implicit g: String): String = g
   
@@ -665,16 +675,16 @@ object Implicits {
   implicit val dogValue: Dog = new Dog
 }
 
-import Implicits._
+import Implicits.*
 
 def needsAnimal(implicit a: Animal): Animal = a
 
 // dogValue is chosen because Dog is more specific than Animal
 needsAnimal  // dogValue
 
-// Locally defined implicits take priority over imported ones
+// A candidate in a deeper nesting level wins in Scala 3.3.8
 def example(): Unit = {
-  import Implicits._
+  import Implicits.*
   
   implicit val localDog: Dog = new Dog
   
@@ -936,7 +946,7 @@ object JsonWriters {
 }
 
 // Import explicitly when needed
-import JsonWriters._
+import JsonWriters.*
 
 // Approach 3: in a package object (use with caution)
 package object myapp {
@@ -1018,7 +1028,7 @@ object Show {
 
 // Test
 object ShowDemo {
-  import Show._
+  import Show.*
   
   case class Person(name: String, age: Int)
   
@@ -1087,7 +1097,7 @@ object Equal {
 
 // Test
 object EqualDemo {
-  import Equal._
+  import Equal.*
   
   case class Person(name: String, age: Int)
   
@@ -1201,7 +1211,7 @@ object Monoid {
 
 // Test
 object MonoidDemo {
-  import Monoid._
+  import Monoid.*
   
   def main(args: Array[String]): Unit = {
     // Numbers
@@ -1315,8 +1325,8 @@ object Applicative {
 
 // Test
 object FunctorDemo {
-  import Functor._
-  import Applicative._
+  import Functor.*
+  import Applicative.*
   
   def main(args: Array[String]): Unit = {
     // Functor
@@ -1410,7 +1420,7 @@ object Validators {
 
 // Usage example
 object ValidationDemo {
-  import Validators._
+  import Validators.*
   
   case class User(username: String, email: String, age: Int)
   
@@ -1495,7 +1505,10 @@ After completing Part 8, you have mastered:
 - Context Bounds syntax
 - Standard type classes (Monoid, Functor, etc.)
 
-**Note**: Scala 3 introduces new implicit syntax (`given`/`using`), but the core concepts are the same. This tutorial focuses on Scala 2 syntax, and this knowledge remains applicable in Scala 3.
+**Note**: The legacy syntax in this chapter is retained only for reading and
+migrating Scala 2 code. New Scala 3.3.8 code should use the contextual
+abstractions in Part 10; old and new syntax do not have identical import and
+resolution rules.
 
 Recommended next topics:
 - Functional programming libraries such as Cats/Scalaz

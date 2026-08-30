@@ -185,8 +185,8 @@ val doubleVal: Double = 3.14159   // 64-bit
 // 數值字面值的不同寫法
 val decimal = 42
 val hex = 0x2A          // 16進位
-val binary = 0b101010   // 2進位 (Scala 2.13+)
-val octal = 052         // 8進位 (Scala 2)
+val binary = 0b101010   // Scala 3.3.8 支援的二進位字面值
+val octal = 42          // Scala 3 不支援 052 這類舊式八進位字面值
 
 // 使用底線增加可讀性
 val million = 1_000_000
@@ -1055,20 +1055,23 @@ while (input != "quit") {
 }
 ```
 
-### 6.4 do-while 迴圈
+### 6.4 先執行本體再測試條件
 
 ```scala
+// Scala 3 已移除 do-while 語法。若本體必須先執行，再把它放入 while 條件區塊。
 var count = 0
-do {
+while {
   println(s"Count: $count")
   count += 1
-} while (count < 5)
+  count < 5
+} do ()
 
 // 至少執行一次
 var x = 10
-do {
+while {
   println("執行一次")
-} while (x < 5)  // 條件為 false,但還是執行了一次
+  x < 5
+} do ()  // 條件為 false，但條件區塊仍先執行一次
 ```
 
 ### 6.5 迴圈控制
@@ -1089,7 +1092,7 @@ def findFirst(numbers: List[Int], target: Int): Option[Int] = {
 
 **使用 scala.util.control.Breaks:**
 ```scala
-import scala.util.control.Breaks._
+import scala.util.control.Breaks.*
 
 // break 範例
 breakable {
@@ -1289,7 +1292,7 @@ val data = {
 ### 練習 1: 溫度轉換器
 
 ```scala
-object TemperatureConverter extends App {
+@main def temperatureConverter(): Unit = {
   def celsiusToFahrenheit(c: Double): Double = {
     c * 9 / 5 + 32
   }
@@ -1318,7 +1321,7 @@ object TemperatureConverter extends App {
 ### 練習 2: 成績分級系統
 
 ```scala
-object GradeSystem extends App {
+@main def gradeSystem(): Unit = {
   def getGrade(score: Int): String = {
     if (score < 0 || score > 100) {
       "無效分數"
@@ -1358,7 +1361,7 @@ object GradeSystem extends App {
 ### 練習 3: 簡易計算機
 
 ```scala
-object SimpleCalculator extends App {
+@main def simpleCalculator(): Unit = {
   def calculate(a: Double, b: Double, operator: String): Option[Double] = {
     operator match {
       case "+" => Some(a + b)
@@ -1394,7 +1397,7 @@ object SimpleCalculator extends App {
 經典的 FizzBuzz 問題:
 
 ```scala
-object FizzBuzz extends App {
+@main def runFizzBuzz(): Unit = {
   def fizzBuzz(n: Int): String = {
     if (n % 15 == 0) "FizzBuzz"
     else if (n % 3 == 0) "Fizz"
@@ -1420,7 +1423,7 @@ object FizzBuzz extends App {
 ### 練習 5: 質數判斷
 
 ```scala
-object PrimeChecker extends App {
+@main def primeChecker(): Unit = {
   def isPrime(n: Int): Boolean = {
     if (n <= 1) {
       false
@@ -1449,7 +1452,7 @@ object PrimeChecker extends App {
 ### 練習 6: 字串處理
 
 ```scala
-object StringProcessor extends App {
+@main def stringProcessor(): Unit = {
   // 統計字串中的字元
   def charCount(str: String): Map[Char, Int] = {
     str.groupBy(identity).view.mapValues(_.length).toMap
@@ -1483,7 +1486,7 @@ object StringProcessor extends App {
 ### 練習 7: 數列生成
 
 ```scala
-object SequenceGenerator extends App {
+@main def sequenceGenerator(): Unit = {
   // 費氏數列
   def fibonacci(n: Int): List[Int] = {
     def fib(count: Int, a: Int, b: Int, acc: List[Int]): List[Int] = {

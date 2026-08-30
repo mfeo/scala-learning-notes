@@ -44,7 +44,7 @@ The runnable Scala code lives under `examples/`:
                     └── ModernScala3Suite.scala
 ```
 
-The source code mirrors Part 10:
+The source code demonstrates selected core topics from Part 10 under Scala 3.3.8:
 - contextual abstractions with `given` and `using`;
 - extension methods;
 - enums;
@@ -88,7 +88,7 @@ mill clean
 
 ## 4. The Example Module
 
-The `examples` module in `build.mill` defines:
+The `examples` module in `build.mill` fixes `scalaVersion` at `3.3.8` and defines:
 - the Scala version;
 - source directories;
 - the test framework;

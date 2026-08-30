@@ -44,7 +44,7 @@ Mill 是 Scala build tool，重點是快速 incremental builds、明確 modules�
                     └── ModernScala3Suite.scala
 ```
 
-source code 對應第十部分：
+source code 使用 Scala 3.3.8 示範第十部分的部分核心主題：
 - 使用 `given` 與 `using` 的 contextual abstractions。
 - extension methods。
 - enums。
@@ -88,7 +88,7 @@ mill clean
 
 ## 4. Example Module
 
-`build.mill` 中的 `examples` module 定義：
+`build.mill` 中的 `examples` module 將 `scalaVersion` 固定為 `3.3.8`，並定義：
 - Scala version。
 - source directories。
 - test framework。

@@ -7,7 +7,7 @@ object Extensions:
 
     def titleCase: String =
       words
-        .map(word => word.head.toUpper + word.tail.toLowerCase)
+        .map(word => s"${word.head.toUpper}${word.tail.toLowerCase}")
         .mkString(" ")
 
   extension [A](values: List[A])

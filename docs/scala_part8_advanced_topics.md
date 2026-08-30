@@ -20,6 +20,10 @@
 
 ## 1. 隱式系統概覽
 
+本章說明舊式 Scala 2 隱式語法，因為遷移既有程式碼時仍需理解它。Scala 3.3.8
+為了相容性仍接受大部分語法，但新程式碼應使用第十部分介紹的 `given`、`using`、
+`extension` 與 `Conversion`。
+
 ### 1.1 什麼是隱式?
 
 ```scala
@@ -55,9 +59,11 @@ def process(data: String)(implicit config: Config): String = {
   data.toUpperCase
 }
 
-// 2. 隱式轉換 (Implicit Conversions)
-//    - 自動型別轉換
-implicit def intToString(x: Int): String = x.toString
+// 2. 上下文轉換 (Contextual Conversions)
+//    - Scala 3 以明確形式表達自動型別轉換
+import scala.Conversion
+import scala.language.implicitConversions
+given Conversion[Int, String] = _.toString
 val s: String = 42  // 自動轉換為 "42"
 
 // 3. 隱式類別 (Implicit Classes)
@@ -181,8 +187,10 @@ greetDefault("Alice")  // 總是 "Hello, Alice!"
 ### 3.1 基本隱式轉換
 
 ```scala
-// 定義隱式轉換
-implicit def intToString(x: Int): String = x.toString
+// 定義 Scala 3 上下文轉換
+import scala.Conversion
+import scala.language.implicitConversions
+given Conversion[Int, String] = _.toString
 
 // 使用隱式轉換
 val s: String = 42  // 編譯器插入: intToString(42)
@@ -193,9 +201,7 @@ printString(123)  // 自動轉換
 // 更實用的範例:日期處理
 import java.time.LocalDate
 
-implicit def stringToDate(s: String): LocalDate = {
-  LocalDate.parse(s)
-}
+given Conversion[String, LocalDate] = LocalDate.parse(_)
 
 def daysBetween(start: LocalDate, end: LocalDate): Long = {
   java.time.temporal.ChronoUnit.DAYS.between(start, end)
@@ -221,10 +227,10 @@ implicit def intToFloat(x: Int): Float = x.toFloat
 
 // val d: Number = 42  // 編譯錯誤:歧義!
 
-// 因此 Scala 2.13+ 建議:
-// - 避免使用隱式轉換
-// - 使用隱式類別代替 (見下一節)
-// - 使用明確的轉換方法
+// Scala 3.3.8 建議：
+// - 轉換可能令人意外時，優先使用明確轉換方法
+// - 否則定義範圍精確的 given Conversion[A, B]
+// - 要新增操作時使用 extension method，而不是 implicit class
 ```
 
 ### 3.3 視圖界定 (已廢棄)
@@ -233,10 +239,10 @@ implicit def intToFloat(x: Int): Float = x.toFloat
 // Scala 2.x 的視圖界定 (View Bounds) - 已廢棄
 // def process[T <% String](value: T): String = value
 
-// 現代做法:使用隱式轉換函數
-def process[T](value: T)(implicit conv: T => String): String = conv(value)
+// Scala 3 做法：明確要求 Conversion
+def process[T](value: T)(using conv: Conversion[T, String]): String = conv(value)
 
-implicit def intToStr(x: Int): String = x.toString
+given Conversion[Int, String] = _.toString
 process(42)  // "42"
 ```
 
@@ -245,6 +251,8 @@ process(42)  // "42"
 ## 4. 隱式類別
 
 ### 4.1 基本用法
+
+以下是舊式相容語法。Scala 3.3.8 新程式碼應優先使用第十部分的 `extension` 語法。
 
 ```scala
 // 隱式類別擴展現有型別
@@ -612,7 +620,7 @@ object Implicits {
 }
 
 def example2(): Unit = {
-  import Implicits._
+  import Implicits.*
   
   def needsGreeting(implicit g: String): String = g
   
@@ -663,16 +671,16 @@ object Implicits {
   implicit val dogValue: Dog = new Dog
 }
 
-import Implicits._
+import Implicits.*
 
 def needsAnimal(implicit a: Animal): Animal = a
 
 // 選擇 dogValue,因為 Dog 比 Animal 更具體
 needsAnimal  // dogValue
 
-// 明確的優先於引入的
+// Scala 3.3.8 會選擇位於更深巢狀層級的候選值
 def example(): Unit = {
-  import Implicits._
+  import Implicits.*
   
   implicit val localDog: Dog = new Dog
   
@@ -934,7 +942,7 @@ object JsonWriters {
 }
 
 // 使用時明確引入
-import JsonWriters._
+import JsonWriters.*
 
 // 方式 3: 在 package object 中 (謹慎使用)
 package object myapp {
@@ -1016,7 +1024,7 @@ object Show {
 
 // 測試
 object ShowDemo {
-  import Show._
+  import Show.*
   
   case class Person(name: String, age: Int)
   
@@ -1085,7 +1093,7 @@ object Equal {
 
 // 測試
 object EqualDemo {
-  import Equal._
+  import Equal.*
   
   case class Person(name: String, age: Int)
   
@@ -1199,7 +1207,7 @@ object Monoid {
 
 // 測試
 object MonoidDemo {
-  import Monoid._
+  import Monoid.*
   
   def main(args: Array[String]): Unit = {
     // 數字
@@ -1313,8 +1321,8 @@ object Applicative {
 
 // 測試
 object FunctorDemo {
-  import Functor._
-  import Applicative._
+  import Functor.*
+  import Applicative.*
   
   def main(args: Array[String]): Unit = {
     // Functor
@@ -1408,7 +1416,7 @@ object Validators {
 
 // 使用範例
 object ValidationDemo {
-  import Validators._
+  import Validators.*
   
   case class User(username: String, email: String, age: Int)
   
@@ -1493,7 +1501,8 @@ object ValidationDemo {
 - ✅ Context Bounds 語法
 - ✅ 標準型別類別 (Monoid, Functor 等)
 
-**注意**: Scala 3 引入了新的隱式語法 (`given`/`using`),但核心概念相同。本教學專注於 Scala 2 語法,這些知識在 Scala 3 中仍然適用。
+**注意**：本章保留舊式語法，只用於閱讀及遷移 Scala 2 程式碼。新的 Scala 3.3.8
+程式碼應使用第十部分的上下文抽象；新舊語法的匯入與解析規則並不完全相同。
 
 建議繼續學習:
 - Cats/Scalaz 等函數式程式設計函式庫

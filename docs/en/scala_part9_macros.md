@@ -172,7 +172,8 @@ val result = debug(10 + 20)  // Output: "10 + 20 = 30"
 // Advantages:
 // - Type safe
 // - Cleaner API
-// - No separate compilation needed
+// - Macro definitions and call sites can share a project, but a macro cannot
+//   be called from the same source file in which it is defined
 ```
 
 ### 2.3 Migration Guide
@@ -285,8 +286,10 @@ val good = requirePositive(10)  // OK
 // val bad = requirePositive(-5)  // Compile error!
 
 // 2. Type operations
+import scala.compiletime.erasedValue
+
 inline def typeString[T]: String = {
-  constValue[T] match {
+  inline erasedValue[T] match {
     case _: Int => "Integer"
     case _: String => "Text"
     case _ => "Unknown"
@@ -302,15 +305,16 @@ inline def tupleSize[T <: Tuple]: Int = {
 
 val size = tupleSize[MyTuple]  // 3
 
-// 4. Sum Types
-sealed trait Color
-case object Red extends Color
-case object Green extends Color
-case object Blue extends Color
+// 4. Sum types through the compiler-provided Mirror
+import scala.deriving.Mirror
 
-inline def colorCount: Int = {
-  constValue[Tuple.Size[Tuple.Union[Color]]]
-}
+enum Color:
+  case Red, Green, Blue
+
+inline def enumSize[E](using m: Mirror.SumOf[E]): Int =
+  constValue[Tuple.Size[m.MirroredElemTypes]]
+
+val colorCount = enumSize[Color] // 3
 ```
 
 ---
@@ -950,18 +954,12 @@ def myMacroImpl[T: Type](expr: Expr[T])(using Quotes): Expr[T] = {
 ### 9.2 Compiler Options
 
 ```scala
-// Enable macro debugging in build.sbt
-scalacOptions ++= Seq(
-  "-Xprint:typer",           // show code after type checking
-  "-Xprint-types",           // show type information
-  "-Vprint:all",             // show all compilation phases
-  "-Ycheck:all",             // check all phases
-  "-Xlog-implicits"          // show implicit resolution
-)
-
-// Only for specific files
-scalacOptions ++= Seq(
-  "-Vprint-args", "MyMacro.scala"
+// Add compiler diagnostics to the ScalaModule in build.mill
+def scalacOptions = Seq(
+  "-Xprint:typer",  // show trees after type checking
+  "-Xprint-types",  // include type information
+  "-Ycheck:all",    // check compiler invariants after every phase
+  "-Vimplicits"     // explain implicit resolution
 )
 ```
 

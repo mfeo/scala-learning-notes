@@ -26,9 +26,7 @@
 ### 1.1 Collection Hierarchy
 
 ```
-Traversable
-    |
- Iterable
+Iterable
     |
     +--- Seq (ordered)
     |     |
@@ -39,7 +37,7 @@ Traversable
     |     |
     |     +--- LinearSeq (fast head/tail operations)
     |           |--- List
-    |           +--- Stream/LazyList
+    |           +--- LazyList
     |
     +--- Set (unordered, no duplicates)
     |     |--- HashSet
@@ -55,7 +53,7 @@ Traversable
 
 ```scala
 // Immutable collections (default, recommended)
-import scala.collection.immutable._
+import scala.collection.immutable.*
 
 val list = List(1, 2, 3)
 val set = Set(1, 2, 3)
@@ -1024,28 +1022,27 @@ val avgAgeByCity = people
 // Map(Taipei -> 25.0, Tokyo -> 30.0, Seoul -> 30.0)
 ```
 
-### 9.4 aggregate (Parallel Aggregation)
+### 9.4 Single-Pass Aggregation
 
 ```scala
-// aggregate - supports parallel computation
 val numbers = List(1, 2, 3, 4, 5)
 
-val sum = numbers.aggregate(0)(
-  (acc, n) => acc + n,          // seqop: combine individual elements
-  (acc1, acc2) => acc1 + acc2   // combop: combine partial results
-)
+val sum = numbers.foldLeft(0)(_ + _)
 // 15
 
 // Practical example: compute average
 case class Average(sum: Double, count: Int)
 
-val avg = numbers.aggregate(Average(0, 0))(
-  (acc, n) => Average(acc.sum + n, acc.count + 1),
-  (acc1, acc2) => Average(acc1.sum + acc2.sum, acc1.count + acc2.count)
-)
+val avg = numbers.foldLeft(Average(0, 0)) { (acc, n) =>
+  Average(acc.sum + n, acc.count + 1)
+}
 
 avg.sum / avg.count  // 3.0
 ```
+
+Scala 3.3.8 uses the Scala 2.13 collections library. Parallel collections are
+provided by the separate `scala-parallel-collections` module rather than by
+`List.aggregate` in the standard library.
 
 ---
 
@@ -1848,7 +1845,7 @@ object DataTransformations {
 ### Core Operations
 - **Transformation**: map, flatMap, collect
 - **Filtering**: filter, filterNot, partition
-- **Aggregation**: sum, reduce, fold, aggregate
+- **Aggregation**: sum, reduce, fold, foldLeft
 - **Lookup**: find, exists, forall
 - **Sorting**: sorted, sortBy, sortWith
 

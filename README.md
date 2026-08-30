@@ -1,6 +1,6 @@
 # Scala 學習筆記
 
-A comprehensive Scala learning guide covering fundamentals through advanced topics.
+A comprehensive Scala 3.3.8 LTS learning guide covering fundamentals through advanced topics.
 Available in Traditional Chinese (繁體中文) and English.
 
 ## 目錄 / Table of Contents
@@ -28,7 +28,7 @@ Available in Traditional Chinese (繁體中文) and English.
 
 ## Runnable Examples
 
-This repository includes a small Mill-based Scala 3 project under `examples/`.
+This repository includes a small Mill-based Scala 3.3.8 project under `examples/`.
 
 ```bash
 mill examples.compile
