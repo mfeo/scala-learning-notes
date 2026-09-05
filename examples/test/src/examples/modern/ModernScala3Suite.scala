@@ -1,6 +1,7 @@
 package examples.modern
 
 import examples.modern.Domain.*
+import examples.modern.Derivation.TypeName
 import examples.modern.Extensions.*
 import examples.modern.TypeClasses.*
 
@@ -34,3 +35,11 @@ class ModernScala3Suite extends munit.FunSuite:
     assert(!Checkout.canPay(CheckoutState.Draft))
     assertEquals(Checkout.describe(CheckoutState.Paid("tx-1")), "Paid: tx-1")
     assertEquals(Checkout.describe(CheckoutState.Cancelled("timeout")), "Cancelled: timeout")
+
+  test("exports selected domain operations through a public facade"):
+    assertEquals(PublicDomain.from(" u-2 ").map(_.value), Some("u-2"))
+    assert(PublicDomain.canPay(CheckoutState.Submitted))
+    assertEquals(PublicDomain.describe(CheckoutState.Draft), "Draft")
+
+  test("derives a type name instance for checkout state"):
+    assertEquals(TypeName[CheckoutState].value, "CheckoutState")

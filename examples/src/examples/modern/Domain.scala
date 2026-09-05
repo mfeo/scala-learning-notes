@@ -1,5 +1,7 @@
 package examples.modern
 
+import examples.modern.Derivation.TypeName
+
 object Domain:
   opaque type UserId = String
 
@@ -15,7 +17,7 @@ object Domain:
 
   final case class User(id: UserId, name: String)
 
-  enum CheckoutState:
+  enum CheckoutState derives TypeName:
     case Draft
     case Submitted
     case Paid(transactionId: String)
@@ -33,3 +35,7 @@ object Domain:
         case CheckoutState.Submitted => "Submitted"
         case CheckoutState.Paid(transactionId) => s"Paid: $transactionId"
         case CheckoutState.Cancelled(reason) => s"Cancelled: $reason"
+
+  object PublicDomain:
+    export UserId.from
+    export Checkout.{canPay, describe}
