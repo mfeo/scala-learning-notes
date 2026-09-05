@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 12: Testing
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Mill & Runnable Examples](scala_part11_mill_examples.md)
+> [Testing example and suite](../../examples/test/src/examples/testing/TestingPatternsSuite.scala) | [📚 Table of Contents](../../README.md) | [« Prev: Mill & Runnable Examples](scala_part11_mill_examples.md)
 
 ---
 

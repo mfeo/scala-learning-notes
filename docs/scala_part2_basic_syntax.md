@@ -1,6 +1,6 @@
 # Scala 教學 - 第二部分：Basic Syntax（基本語法）
 
-> [« 上一篇：Scala 簡介與環境設置](scala_part1_introduction.md) | [📚 目錄](../README.md) | [下一篇：函數與方法 »](scala_part3_functions.md)
+> [Runnable example and tests](../examples/src/examples/basics) | [« 上一篇：Scala 簡介與環境設置](scala_part1_introduction.md) | [📚 目錄](../README.md) | [下一篇：函數與方法 »](scala_part3_functions.md)
 
 ---
 

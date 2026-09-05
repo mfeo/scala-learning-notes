@@ -1,6 +1,6 @@
 # Scala 教學 - 第十部分：Modern Scala 3.3.8 LTS
 
-> [« 上一篇：巨集](scala_part9_macros.md) | [📚 目錄](../README.md) | [下一篇：Mill 與可執行範例 »](scala_part11_mill_examples.md)
+> [Runnable example and tests](../examples/src/examples/modern) | [« 上一篇：巨集](scala_part9_macros.md) | [📚 目錄](../README.md) | [下一篇：Mill 與可執行範例 »](scala_part11_mill_examples.md)
 
 ---
 

@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 1: Introduction to Scala and Environment Setup
 
-> [📚 Table of Contents](../../README.md) | [Next: Basic Syntax »](scala_part2_basic_syntax.md)
+> [Runnable example and tests](../../examples/src/examples/introduction) | [📚 Table of Contents](../../README.md) | [Next: Basic Syntax »](scala_part2_basic_syntax.md)
 
 ---
 

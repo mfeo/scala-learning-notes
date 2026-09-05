@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 5: Collections
 
-> [📚 Table of Contents](../../README.md) | [« Prev: OOP](scala_part4_oop.md) | [Next: Pattern Matching »](scala_part6_pattern_matching.md)
+> [Runnable example and tests](../../examples/src/examples/collections) | [📚 Table of Contents](../../README.md) | [« Prev: OOP](scala_part4_oop.md) | [Next: Pattern Matching »](scala_part6_pattern_matching.md)
 
 ---
 

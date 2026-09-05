@@ -28,10 +28,12 @@ Available in Traditional Chinese (繁體中文) and English.
 
 ## Runnable Examples
 
-This repository includes a small Mill-based Scala 3.3.8 project under `examples/`.
+This repository includes a Mill-based Scala 3.3.8 project under [`examples/`](examples/README.md).
+It contains compiled examples and focused tests for all twelve chapters.
 
 ```bash
-mill examples.compile
-mill examples.runMain examples.ModernScala3App
-mill examples.test
+mill --no-server examples.compile
+mill --no-server examples.runMain examples.AllExamplesApp
+mill --no-server examples.runMain examples.AllExamplesApp all
+mill --no-server examples.test
 ```

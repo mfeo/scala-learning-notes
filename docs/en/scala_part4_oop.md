@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 4: Object-Oriented Programming
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Functions](scala_part3_functions.md) | [Next: Collections »](scala_part5_collections.md)
+> [Runnable example and tests](../../examples/src/examples/oop) | [📚 Table of Contents](../../README.md) | [« Prev: Functions](scala_part3_functions.md) | [Next: Collections »](scala_part5_collections.md)
 
 ---
 

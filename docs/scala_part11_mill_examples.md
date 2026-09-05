@@ -1,6 +1,6 @@
 # Scala 教學 - 第十一部分：Mill and Runnable Examples（Mill 與可執行範例）
 
-> [« 上一篇：Modern Scala 3](scala_part10_modern_scala3.md) | [📚 目錄](../README.md) | [下一篇：測試 »](scala_part12_testing.md)
+> [Runnable example catalog](../examples/src/examples/ExamplesCatalog.scala) | [« 上一篇：Modern Scala 3](scala_part10_modern_scala3.md) | [📚 目錄](../README.md) | [下一篇：測試 »](scala_part12_testing.md)
 
 ---
 
@@ -33,25 +33,18 @@ Testing（測試）、Dependency（依賴套件）與 Multiple Modules（多模�
 .
 ├── build.mill
 └── examples
-    ├── src
-    │   └── examples
-    │       ├── ModernScala3App.scala
-    │       └── modern
-    │           ├── Domain.scala
-    │           ├── Extensions.scala
-    │           └── TypeClasses.scala
-    └── test
-        └── src
-            └── examples
-                └── modern
-                    └── ModernScala3Suite.scala
+    ├── README.md
+    ├── src/examples
+    │   ├── AllExamplesApp.scala
+    │   ├── ExamplesCatalog.scala
+    │   └── <topic>/
+    └── test/src/examples
+        └── <topic>/
 ```
 
-Source Code（原始碼）使用 Scala 3.3.8 示範第十部分的部分核心主題：
-- 使用 `given` 與 `using` 的 Contextual Abstractions（上下文抽象）。
-- Extension Methods（擴充方法）。
-- Enums（列舉）。
-- Opaque Types（不透明型別）。
+The topic directories cover Parts 1 through 10, `ExamplesCatalog` provides the Part 11 index, and
+the testing directory demonstrates Part 12. See [`examples/README.md`](../examples/README.md) for
+the complete source and test mapping.
 
 ---
 
@@ -60,25 +53,28 @@ Source Code（原始碼）使用 Scala 3.3.8 示範第十部分的部分核心�
 編譯範例：
 
 ```bash
-mill examples.compile
+mill --no-server examples.compile
 ```
 
 執行 Sample Application（範例應用程式）：
 
 ```bash
-mill examples.runMain examples.ModernScala3App
+mill --no-server examples.runMain examples.AllExamplesApp collections
+
+# Run every content chapter
+mill --no-server examples.runMain examples.AllExamplesApp all
 ```
 
 執行測試：
 
 ```bash
-mill examples.test
+mill --no-server examples.test
 ```
 
 執行單一 Test Class（測試類別）：
 
 ```bash
-mill examples.test.testOnly examples.modern.ModernScala3Suite
+mill --no-server examples.test.testOnly examples.modern.ModernScala3Suite
 ```
 
 清除 Build Output（建置輸出）：

@@ -1,6 +1,6 @@
 # Scala 教學 - 第十二部分：Testing（測試）
 
-> [« 上一篇：Mill 與可執行範例](scala_part11_mill_examples.md) | [📚 目錄](../README.md)
+> [Testing example and suite](../examples/test/src/examples/testing/TestingPatternsSuite.scala) | [« 上一篇：Mill 與可執行範例](scala_part11_mill_examples.md) | [📚 目錄](../README.md)
 
 ---
 

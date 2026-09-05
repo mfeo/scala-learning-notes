@@ -1,6 +1,6 @@
 # Scala 教學 - 第六部分：Pattern Matching（模式比對）
 
-> [« 上一篇：集合操作](scala_part5_collections.md) | [📚 目錄](../README.md) | [下一篇：錯誤處理 »](scala_part7_error_handling.md)
+> [Runnable example and tests](../examples/src/examples/patterns) | [« 上一篇：集合操作](scala_part5_collections.md) | [📚 目錄](../README.md) | [下一篇：錯誤處理 »](scala_part7_error_handling.md)
 
 ---
 

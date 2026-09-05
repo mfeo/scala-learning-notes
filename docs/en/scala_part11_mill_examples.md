@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 11: Mill & Runnable Examples
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Modern Scala 3](scala_part10_modern_scala3.md) | [Next: Testing »](scala_part12_testing.md)
+> [Runnable example catalog](../../examples/src/examples/ExamplesCatalog.scala) | [📚 Table of Contents](../../README.md) | [« Prev: Modern Scala 3](scala_part10_modern_scala3.md) | [Next: Testing »](scala_part12_testing.md)
 
 ---
 
@@ -30,25 +30,18 @@ The runnable Scala code lives under `examples/`:
 .
 ├── build.mill
 └── examples
-    ├── src
-    │   └── examples
-    │       ├── ModernScala3App.scala
-    │       └── modern
-    │           ├── Domain.scala
-    │           ├── Extensions.scala
-    │           └── TypeClasses.scala
-    └── test
-        └── src
-            └── examples
-                └── modern
-                    └── ModernScala3Suite.scala
+    ├── README.md
+    ├── src/examples
+    │   ├── AllExamplesApp.scala
+    │   ├── ExamplesCatalog.scala
+    │   └── <topic>/
+    └── test/src/examples
+        └── <topic>/
 ```
 
-The source code demonstrates selected core topics from Part 10 under Scala 3.3.8:
-- contextual abstractions with `given` and `using`;
-- extension methods;
-- enums;
-- opaque types.
+The topic directories cover Parts 1 through 10, `ExamplesCatalog` provides the Part 11 index, and
+the testing directory demonstrates Part 12. See [`examples/README.md`](../../examples/README.md) for
+the complete source and test mapping.
 
 ---
 
@@ -57,25 +50,28 @@ The source code demonstrates selected core topics from Part 10 under Scala 3.3.8
 Compile the examples:
 
 ```bash
-mill examples.compile
+mill --no-server examples.compile
 ```
 
 Run the sample application:
 
 ```bash
-mill examples.runMain examples.ModernScala3App
+mill --no-server examples.runMain examples.AllExamplesApp collections
+
+# Run every content chapter
+mill --no-server examples.runMain examples.AllExamplesApp all
 ```
 
 Run tests:
 
 ```bash
-mill examples.test
+mill --no-server examples.test
 ```
 
 Run one test class:
 
 ```bash
-mill examples.test.testOnly examples.modern.ModernScala3Suite
+mill --no-server examples.test.testOnly examples.modern.ModernScala3Suite
 ```
 
 Clean build output:

@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 6: Pattern Matching
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Collections](scala_part5_collections.md) | [Next: Error Handling »](scala_part7_error_handling.md)
+> [Runnable example and tests](../../examples/src/examples/patterns) | [📚 Table of Contents](../../README.md) | [« Prev: Collections](scala_part5_collections.md) | [Next: Error Handling »](scala_part7_error_handling.md)
 
 ---
 

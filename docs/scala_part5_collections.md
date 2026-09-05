@@ -1,6 +1,6 @@
 # Scala 教學 - 第五部分：Collection Operations（集合操作）
 
-> [« 上一篇：物件導向程式設計](scala_part4_oop.md) | [📚 目錄](../README.md) | [下一篇：模式比對 »](scala_part6_pattern_matching.md)
+> [Runnable example and tests](../examples/src/examples/collections) | [« 上一篇：物件導向程式設計](scala_part4_oop.md) | [📚 目錄](../README.md) | [下一篇：模式比對 »](scala_part6_pattern_matching.md)
 
 ---
 

@@ -1,6 +1,6 @@
 # Scala 教學 - 第四部分：Object-Oriented Programming（物件導向程式設計）
 
-> [« 上一篇：函數與方法](scala_part3_functions.md) | [📚 目錄](../README.md) | [下一篇：集合操作 »](scala_part5_collections.md)
+> [Runnable example and tests](../examples/src/examples/oop) | [« 上一篇：函數與方法](scala_part3_functions.md) | [📚 目錄](../README.md) | [下一篇：集合操作 »](scala_part5_collections.md)
 
 ---
 

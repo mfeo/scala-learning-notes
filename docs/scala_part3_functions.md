@@ -1,6 +1,6 @@
 # Scala 教學 - 第三部分：Functions and Methods（函數與方法）
 
-> [« 上一篇：基本語法](scala_part2_basic_syntax.md) | [📚 目錄](../README.md) | [下一篇：物件導向程式設計 »](scala_part4_oop.md)
+> [Runnable example and tests](../examples/src/examples/functions) | [« 上一篇：基本語法](scala_part2_basic_syntax.md) | [📚 目錄](../README.md) | [下一篇：物件導向程式設計 »](scala_part4_oop.md)
 
 ---
 

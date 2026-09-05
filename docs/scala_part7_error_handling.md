@@ -1,6 +1,6 @@
 # Scala 教學 - 第七部分：Error Handling（錯誤處理）
 
-> [« 上一篇：模式比對](scala_part6_pattern_matching.md) | [📚 目錄](../README.md) | [下一篇：進階主題 »](scala_part8_advanced_topics.md)
+> [Runnable example and tests](../examples/src/examples/errors) | [« 上一篇：模式比對](scala_part6_pattern_matching.md) | [📚 目錄](../README.md) | [下一篇：進階主題 »](scala_part8_advanced_topics.md)
 
 ---
 

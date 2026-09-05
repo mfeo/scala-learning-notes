@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 10: Modern Scala 3.3.8 LTS
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Macros](scala_part9_macros.md) | [Next: Mill & Runnable Examples »](scala_part11_mill_examples.md)
+> [Runnable example and tests](../../examples/src/examples/modern) | [📚 Table of Contents](../../README.md) | [« Prev: Macros](scala_part9_macros.md) | [Next: Mill & Runnable Examples »](scala_part11_mill_examples.md)
 
 ---
 

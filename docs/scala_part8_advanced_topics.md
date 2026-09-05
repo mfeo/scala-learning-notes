@@ -1,6 +1,6 @@
 # Scala 教學 - 第八部分：Contextual Abstractions and Type Classes（上下文抽象與型別類別）
 
-> [« 上一篇：錯誤處理](scala_part7_error_handling.md) | [📚 目錄](../README.md) | [下一篇：巨集 »](scala_part9_macros.md)
+> [Runnable example and tests](../examples/src/examples/contextual) | [« 上一篇：錯誤處理](scala_part7_error_handling.md) | [📚 目錄](../README.md) | [下一篇：巨集 »](scala_part9_macros.md)
 
 ---
 

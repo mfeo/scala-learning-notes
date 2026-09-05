@@ -1,6 +1,6 @@
 # Scala 教學 - 第一部分：Introduction and Setup（簡介與環境設置）
 
-> [📚 目錄](../README.md) | [下一篇：基本語法 »](scala_part2_basic_syntax.md)
+> [Runnable example and tests](../examples/src/examples/introduction) | [📚 目錄](../README.md) | [下一篇：基本語法 »](scala_part2_basic_syntax.md)
 
 ---
 

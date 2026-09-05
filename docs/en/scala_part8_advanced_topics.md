@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 8: Contextual Abstractions and Type Classes
 
-> [« Prev: Error Handling](scala_part7_error_handling.md) | [📚 Table of Contents](../../README.md) | [Next: Macros »](scala_part9_macros.md)
+> [Runnable example and tests](../../examples/src/examples/contextual) | [« Prev: Error Handling](scala_part7_error_handling.md) | [📚 Table of Contents](../../README.md) | [Next: Macros »](scala_part9_macros.md)
 
 ---
 

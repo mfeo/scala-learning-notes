@@ -1,6 +1,6 @@
 # Scala Tutorial - Macros
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Contextual Abstractions and Type Classes](scala_part8_advanced_topics.md)
+> [Runnable example and tests](../../examples/src/examples/macros) | [📚 Table of Contents](../../README.md) | [« Prev: Contextual Abstractions and Type Classes](scala_part8_advanced_topics.md)
 
 ---
 

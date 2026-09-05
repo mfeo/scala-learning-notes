@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 2: Basic Syntax
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Introduction](scala_part1_introduction.md) | [Next: Functions »](scala_part3_functions.md)
+> [Runnable example and tests](../../examples/src/examples/basics) | [📚 Table of Contents](../../README.md) | [« Prev: Introduction](scala_part1_introduction.md) | [Next: Functions »](scala_part3_functions.md)
 
 ---
 

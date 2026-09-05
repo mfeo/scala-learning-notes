@@ -1,6 +1,6 @@
 # Scala 教學 - Scala 3 Macros（Scala 3 巨集）
 
-> [« 上一篇：上下文抽象與型別類別](scala_part8_advanced_topics.md) | [📚 目錄](../README.md)
+> [Runnable example and tests](../examples/src/examples/macros) | [« 上一篇：上下文抽象與型別類別](scala_part8_advanced_topics.md) | [📚 目錄](../README.md)
 
 ---
 

@@ -1,6 +1,6 @@
 # Scala Tutorial - Part 3: Functions and Methods
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Basic Syntax](scala_part2_basic_syntax.md) | [Next: OOP »](scala_part4_oop.md)
+> [Runnable example and tests](../../examples/src/examples/functions) | [📚 Table of Contents](../../README.md) | [« Prev: Basic Syntax](scala_part2_basic_syntax.md) | [Next: OOP »](scala_part4_oop.md)
 
 ---
 
