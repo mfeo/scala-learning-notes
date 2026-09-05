@@ -1,25 +1,25 @@
-# Scala 教學 - 第四部分:物件導向程式設計
+# Scala 教學 - 第四部分：Object-Oriented Programming（物件導向程式設計）
 
 > [« 上一篇：函數與方法](scala_part3_functions.md) | [📚 目錄](../README.md) | [下一篇：集合操作 »](scala_part5_collections.md)
 
 ---
 
 ## 目錄
-1. [類別基礎](#1-類別基礎)
-2. [建構子](#2-建構子)
-3. [物件 (Object)](#3-物件-object)
-4. [伴生物件](#4-伴生物件)
-5. [Case Class](#5-case-class)
-6. [Trait 特徵](#6-trait-特徵)
-7. [繼承](#7-繼承)
-8. [抽象類別](#8-抽象類別)
-9. [多型](#9-多型)
-10. [存取修飾符](#10-存取修飾符)
+1. [Class 基礎](#1-class類別基礎)
+2. [Constructor](#2-constructor建構子)
+3. [Object](#3-object物件)
+4. [Companion Object](#4-companion-object伴生物件)
+5. [Case Class](#5-case-class案例類別)
+6. [Trait](#6-trait特徵)
+7. [Inheritance](#7-inheritance繼承)
+8. [Abstract Class](#8-abstract-class抽象類別)
+9. [Polymorphism](#9-polymorphism多型)
+10. [Access Modifier](#10-access-modifier存取修飾符)
 11. [實作練習](#11-實作練習)
 
 ---
 
-## 1. 類別基礎
+## 1. Class（類別）基礎
 
 ### 1.1 定義類別
 
@@ -156,7 +156,7 @@ class Person(private var _age: Int) {
 
 ---
 
-## 2. 建構子
+## 2. Constructor（建構子）
 
 ### 2.1 主建構子
 
@@ -249,11 +249,11 @@ println(s"$rect3, 面積: ${rect3.area}")
 
 ---
 
-## 3. 物件 (Object)
+## 3. Object（物件）
 
 `object` 是 Scala 實現單例模式的方式。
 
-### 3.1 單例物件
+### 3.1 Singleton Object（單例物件）
 
 ```scala
 object DatabaseConnection {
@@ -331,7 +331,7 @@ object MyApp {
 
 ---
 
-## 4. 伴生物件
+## 4. Companion Object（伴生物件）
 
 伴生物件 (Companion Object) 與類別同名,且在同一個檔案中。
 
@@ -415,7 +415,7 @@ val alice = Person("Alice", 25)  // 等同於 Person.apply("Alice", 25)
 val bob = Person("Bob")          // 等同於 Person.apply("Bob")
 ```
 
-### 4.3 unapply 方法 (提取器)
+### 4.3 `unapply` Method（方法）與 Extractor（提取器）
 
 `unapply` 用於模式比對:
 
@@ -456,7 +456,7 @@ println(s"$u @ $d")
 
 ---
 
-## 5. Case Class
+## 5. Case Class（案例類別）
 
 Case Class 是 Scala 的特殊類別,自動提供許多有用功能。
 
@@ -600,7 +600,7 @@ class RegularPerson(val name: String, val age: Int) {
 
 ---
 
-## 6. Trait 特徵
+## 6. Trait（特徵）
 
 Trait 類似於 Java 的介面,但可以包含實作。
 
@@ -709,7 +709,7 @@ println(d.message)
 // 線性化順序: D -> C -> B -> A
 ```
 
-### 6.5 自型別 (Self Type)
+### 6.5 Self Type（自型別）
 
 ```scala
 trait User {
@@ -786,7 +786,7 @@ println(s"文件年齡: ${doc.age} ms")
 
 ---
 
-## 7. 繼承
+## 7. Inheritance（繼承）
 
 ### 7.1 基本繼承
 
@@ -809,7 +809,7 @@ println(dog.move())       // "Moving" (繼承自 Animal)
 println(dog.fetch())      // "Buddy is fetching"
 ```
 
-### 7.2 覆寫方法
+### 7.2 Method Override（方法覆寫）
 
 ```scala
 class Shape {
@@ -883,7 +883,7 @@ animal match {
 
 ---
 
-## 8. 抽象類別
+## 8. Abstract Class（抽象類別）
 
 ### 8.1 定義抽象類別
 
@@ -1000,7 +1000,7 @@ class Book(
 
 ---
 
-## 9. 多型
+## 9. Polymorphism（多型）
 
 ### 9.1 子型別多型
 
@@ -1082,7 +1082,7 @@ class DogList[T >: Dog](val dogs: List[T])
 // Scala 3 以 using 參數明確要求 Conversion[T, U]
 ```
 
-### 9.3 型別變異 (Variance)
+### 9.3 Variance（型別變異）
 
 **協變 (Covariance) - `+T`:**
 
@@ -1132,7 +1132,7 @@ val dogContainer: Container[Dog] = new Container(new Dog)
 
 ---
 
-## 10. 存取修飾符
+## 10. Access Modifier（存取修飾符）
 
 ### 10.1 public, private, protected
 

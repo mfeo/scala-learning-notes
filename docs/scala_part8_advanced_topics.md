@@ -1,4 +1,4 @@
-# Scala 教學 - 第八部分：上下文抽象與型別類別
+# Scala 教學 - 第八部分：Contextual Abstractions and Type Classes（上下文抽象與型別類別）
 
 > [« 上一篇：錯誤處理](scala_part7_error_handling.md) | [📚 目錄](../README.md) | [下一篇：巨集 »](scala_part9_macros.md)
 
@@ -6,20 +6,20 @@
 
 ## 目錄
 
-1. [上下文參數](#1-上下文參數)
-2. [Given 實例](#2-given-實例)
-3. [上下文轉換](#3-上下文轉換)
-4. [擴充方法](#4-擴充方法)
-5. [型別類別](#5-型別類別)
-6. [Context Bound](#6-context-bound)
-7. [實例搜尋與作用域](#7-實例搜尋與作用域)
-8. [組合型別類別](#8-組合型別類別)
+1. [Context Parameter](#1-context-parameter上下文參數)
+2. [Given Instance](#2-given-instancegiven-實例)
+3. [Contextual Conversion](#3-contextual-conversion上下文轉換)
+4. [Extension Method](#4-extension-method擴充方法)
+5. [Type Class](#5-type-class型別類別)
+6. [Context Bound](#6-context-bound上下文界定)
+7. [Instance Search 與 Scope](#7-instance-search實例搜尋與-scope作用域)
+8. [Composing Type Classes](#8-composing-type-classes組合型別類別)
 9. [最佳實踐](#9-最佳實踐)
 10. [練習](#10-練習)
 
 ---
 
-## 1. 上下文參數
+## 1. Context Parameter（上下文參數）
 
 Scala 3 使用 `using` 宣告由呼叫端上下文提供的參數。這適合傳遞設定、排序規則、
 執行環境或型別類別實例。
@@ -61,7 +61,7 @@ sortValues(List(Person("Alice", 25), Person("Bob", 20)))
 
 ---
 
-## 2. Given 實例
+## 2. Given Instance（Given 實例）
 
 `given` 建立編譯器可依型別尋找的上下文值。實例可以具名，也可以只由型別識別。
 
@@ -95,7 +95,7 @@ given [A](using encoder: Encoder[A]): Encoder[List[A]] with
 
 ---
 
-## 3. 上下文轉換
+## 3. Contextual Conversion（上下文轉換）
 
 `Conversion[A, B]` 表示編譯器可在需要 `B` 時將 `A` 轉換為 `B`。自動轉換可能隱藏
 成本或錯誤，因此應保持範圍精確；一般資料轉換優先使用具名方法。
@@ -125,7 +125,7 @@ object Port:
 
 ---
 
-## 4. 擴充方法
+## 4. Extension Method（擴充方法）
 
 `extension` 可以替既有型別加入方法，而不需要修改原始型別。
 
@@ -152,7 +152,7 @@ List.empty[Int].toEither("empty") // Left("empty")
 
 ---
 
-## 5. 型別類別
+## 5. Type Class（型別類別）
 
 型別類別以泛型介面描述能力，再為個別型別提供實例。演算法只依賴能力，不需要修改
 資料型別或建立繼承關係。
@@ -199,9 +199,9 @@ Person("Alice", 25).show
 
 ---
 
-## 6. Context Bound
+## 6. Context Bound（上下文界定）
 
-Context bound（上下文界定）是只需要某個型別類別實例時的簡寫。`[A: Show]` 表示作用域
+Context Bound（上下文界定）是只需要某個 Type Class 實例時的簡寫。`[A: Show]` 表示作用域
 中必須存在 `Show[A]`。
 
 ```scala
@@ -221,7 +221,7 @@ def sortedLabels[A: Show: Ordering](values: List[A]): List[String] =
 
 ---
 
-## 7. 實例搜尋與作用域
+## 7. Instance Search（實例搜尋）與 Scope（作用域）
 
 編譯器會從目前作用域、明確匯入及相關型別的伴生物件尋找 `given`。可以只匯入某個
 物件提供的 given 實例：
@@ -254,7 +254,7 @@ sortValues(List(Person("Bob", 20), Person("Alice", 25)))(using byName)
 
 ---
 
-## 8. 組合型別類別
+## 8. Composing Type Classes（組合型別類別）
 
 型別類別實例可以遞迴組合。例如，只要元素具備 `Show`，清單也能具備 `Show`：
 
@@ -293,7 +293,8 @@ def combineAll[A: Monoid](values: List[A]): A =
   values.foldLeft(monoid.empty)(monoid.combine)
 ```
 
-若一個型別需要多種不同的組合規則，應將實例放入具名物件，由使用端明確匯入，避免
+`Monoid`（幺半群）提供單位元素與可結合的二元運算。若一個型別需要多種不同的組合規則，
+應將實例放入具名物件，由使用端明確匯入，避免
 同型別實例衝突。
 
 ---

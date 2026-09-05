@@ -6,12 +6,12 @@
 
 ## 目錄
 1. [為什麼需要 Modern Scala 3](#1-為什麼需要-modern-scala-3)
-2. [given 與 using 的上下文抽象](#2-given-與-using-的上下文抽象)
-3. [Extension Methods](#3-extension-methods)
-4. [Enums](#4-enums)
-5. [Opaque Types](#5-opaque-types)
-6. [Exports](#6-exports)
-7. [Derives](#7-derives)
+2. [Contextual Abstractions](#2-contextual-abstractions上下文抽象)
+3. [Extension Methods](#3-extension-methods擴充方法)
+4. [Enums](#4-enum列舉)
+5. [Opaque Types](#5-opaque-type不透明型別)
+6. [Export Clauses](#6-export-clause匯出子句)
+7. [Type Class Derivation](#7-type-class-derivation型別類別衍生)
 8. [Scala 3.3.8 慣例](#8-scala-338-慣例)
 9. [實作練習](#9-實作練習)
 
@@ -20,8 +20,10 @@
 ## 1. 為什麼需要 Modern Scala 3
 
 本指南以 Scala 3.3.8 LTS 為目標。LTS 是 Long-Term Support（長期支援），表示
-3.3 系列會比一般版本獲得更長期、以相容性為主的維護。Scala 3 保留靜態型別、
-物件導向與函數式程式設計等核心模型，同時加入更清楚的語法與更有表達力的型別系統。
+3.3 系列會比一般版本獲得更長期、以相容性為主的維護。Scala 3 保留 Static Typing
+（靜態型別）、Object-Oriented Programming（物件導向程式設計）與 Functional
+Programming（函數式程式設計）等核心模型，同時加入更清楚的語法與更有表達力的
+Type System（型別系統）。
 
 主要改進包括 `given`／`using` 上下文抽象、extension method、enum、opaque type、
 export、型別類別衍生、新型別、可省略大括號、頂層定義及編譯期後設程式設計。
@@ -81,10 +83,11 @@ extension (left: Count)
   def *(factor: Int): Count = Count(left.value * factor)
 ```
 
-### 1.2 新型別
+### 1.2 Modern Types（現代型別）
 
-Scala 3.3.8 包含交集型別、聯集型別、型別 lambda、match type、相依函式型別與
-多型函式型別：
+Scala 3.3.8 包含 Intersection Type（交集型別）、Union Type（聯集型別）、
+Type Lambda（型別 Lambda）、Match Type（比對型別）、Dependent Function Type
+（相依函式型別）與 Polymorphic Function Type（多型函式型別）：
 
 ```scala
 trait Resettable:
@@ -116,12 +119,12 @@ val identity: [A] => A => A =
   [A] => (value: A) => value
 ```
 
-標準 tuple 操作、match type，以及可適用於不同型別種類的 `Tuple` 與 `Function`
-抽象，讓泛型程式設計不再受 Scala 2 的 22 個元素上限限制。
+標準 Tuple Operations（元組操作）、Match Type（比對型別），以及可適用於不同型別
+種類的 `Tuple` 與 `Function` 抽象，支援任意 arity（參數或元素數量）的泛型程式設計。
 
 ---
 
-## 2. given 與 using 的上下文抽象
+## 2. Contextual Abstractions（上下文抽象）
 
 Scala 3.3.8 使用 `given` 定義上下文實例、`using` 宣告上下文需求，並以 `summon`
 取得目前作用域中的實例。
@@ -188,7 +191,7 @@ Given 應放在所提供型別或型別類別的 companion object 附近、明�
 
 ---
 
-## 3. Extension Methods
+## 3. Extension Methods（擴充方法）
 
 Extension method 讓既有型別取得新操作，而不需要修改原始型別：
 
@@ -210,7 +213,7 @@ Scala 3.3.8 也支援多型別參數的群組擴充、上下文參數、運算�
 
 ---
 
-## 4. Enums
+## 4. Enum（列舉）
 
 Enum 可表示簡單列舉及代數資料型別：
 
@@ -233,7 +236,7 @@ Enum 可有參數、成員、泛型 case 及與 Java 相容的 case。所有替�
 
 ---
 
-## 5. Opaque Types
+## 5. Opaque Type（不透明型別）
 
 Opaque type alias 在不配置包裝物件的情況下建立抽象邊界：
 
@@ -257,7 +260,7 @@ import Domain.*
 
 ---
 
-## 6. Exports
+## 6. Export Clause（匯出子句）
 
 `export` 會建立轉發成員，支援選取、萬用字元、重新命名及 given 匯出：
 
@@ -274,7 +277,7 @@ Export 適合組合元件及建立 façade API。若轉發時必須加入驗證�
 
 ---
 
-## 7. Derives
+## 7. Type Class Derivation（型別類別衍生）
 
 `derives` 會向型別類別的 companion object 要求 `derived` 實作；編譯器提供描述欄位或
 替代情形的 `Mirror`：

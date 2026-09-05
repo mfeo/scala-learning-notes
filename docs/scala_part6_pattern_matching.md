@@ -1,27 +1,27 @@
-# Scala 教學 - 第六部分:模式比對 (Pattern Matching)
+# Scala 教學 - 第六部分：Pattern Matching（模式比對）
 
 > [« 上一篇：集合操作](scala_part5_collections.md) | [📚 目錄](../README.md) | [下一篇：錯誤處理 »](scala_part7_error_handling.md)
 
 ---
 
 ## 目錄
-1. [模式比對基礎](#1-模式比對基礎)
-2. [常量模式](#2-常量模式)
-3. [變數模式](#3-變數模式)
-4. [建構子模式](#4-建構子模式)
-5. [序列模式](#5-序列模式)
-6. [元組模式](#6-元組模式)
-7. [型別模式](#7-型別模式)
-8. [Guard 條件](#8-guard-條件)
-9. [模式綁定](#9-模式綁定)
-10. [正則表達式模式](#10-正則表達式模式)
-11. [部分函數](#11-部分函數)
+1. [Pattern Matching 基礎](#1-pattern-matching模式比對基礎)
+2. [Constant Pattern](#2-constant-pattern常量模式)
+3. [Variable Pattern](#3-variable-pattern變數模式)
+4. [Constructor Pattern](#4-constructor-pattern建構子模式)
+5. [Sequence Pattern](#5-sequence-pattern序列模式)
+6. [Tuple Pattern](#6-tuple-pattern元組模式)
+7. [Type Pattern](#7-type-pattern型別模式)
+8. [Pattern Guard](#8-pattern-guard模式守衛條件)
+9. [Pattern Binding](#9-pattern-binding模式綁定)
+10. [Regular Expression Pattern](#10-regular-expression-pattern正規表示式模式)
+11. [PartialFunction](#11-partialfunction部分函數)
 12. [Option 模式比對](#12-option-模式比對)
 13. [實作練習](#13-實作練習)
 
 ---
 
-## 1. 模式比對基礎
+## 1. Pattern Matching（模式比對）基礎
 
 ### 1.1 match 表達式
 
@@ -96,9 +96,9 @@ def colorNameComplete(color: Color): String = color match {
 
 ---
 
-## 2. 常量模式
+## 2. Constant Pattern（常量模式）
 
-### 2.1 字面值匹配
+### 2.1 Literal Matching（字面值比對）
 
 ```scala
 // 數字匹配
@@ -161,7 +161,7 @@ def handleStatus(code: Int): String = code match {
 
 ---
 
-## 3. 變數模式
+## 3. Variable Pattern（變數模式）
 
 ### 3.1 變數綁定
 
@@ -212,7 +212,7 @@ def identifyColor(hex: String): String = hex match {
 
 ---
 
-## 4. 建構子模式
+## 4. Constructor Pattern（建構子模式）
 
 ### 4.1 Case Class 解構
 
@@ -289,7 +289,7 @@ def findManager(org: Organization, deptName: String): Option[String] = org match
 
 ---
 
-## 5. 序列模式
+## 5. Sequence Pattern（序列模式）
 
 ### 5.1 List 模式
 
@@ -381,7 +381,7 @@ def matchVector(vec: Vector[Int]): String = vec match {
 
 ---
 
-## 6. 元組模式
+## 6. Tuple Pattern（元組模式）
 
 ### 6.1 元組解構
 
@@ -440,7 +440,7 @@ def swap[A, B](pair: (A, B)): (B, A) = pair match {
 
 ---
 
-## 7. 型別模式
+## 7. Type Pattern（型別模式）
 
 ### 7.1 基本型別匹配
 
@@ -475,7 +475,7 @@ collectionMatch(Set("a", "b"))        // "set of 2 elements"
 collectionMatch(Map("x" -> 1))        // "map of 1 entries"
 ```
 
-### 7.3 型別擦除注意事項
+### 7.3 Type Erasure（型別擦除）注意事項
 
 ```scala
 // ⚠️ 警告:型別擦除
@@ -522,7 +522,7 @@ sound(Cat("Whiskers")) // "Whiskers says Meow!"
 
 ---
 
-## 8. Guard 條件
+## 8. Pattern Guard（模式守衛條件）
 
 ### 8.1 基本 Guard
 
@@ -611,7 +611,7 @@ def evaluateStudent(student: Student): String = student match {
 
 ---
 
-## 9. 模式綁定
+## 9. Pattern Binding（模式綁定）
 
 ### 9.1 @ 符號綁定
 
@@ -682,7 +682,7 @@ def handleResponse(response: Response): String = response match {
 
 ---
 
-## 10. 正則表達式模式
+## 10. Regular Expression Pattern（正規表示式模式）
 
 ### 10.1 基本正則匹配
 
@@ -771,7 +771,7 @@ parseLog(log)
 
 ---
 
-## 11. 部分函數
+## 11. `PartialFunction`（部分函數）
 
 ### 11.1 PartialFunction 基礎
 
@@ -1132,7 +1132,7 @@ object JsonParser {
 }
 ```
 
-### 練習 3: 狀態機
+### 練習 3：State Machine（狀態機）
 
 ```scala
 // 自動販賣機

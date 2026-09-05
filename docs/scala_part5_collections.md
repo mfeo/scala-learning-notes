@@ -1,27 +1,27 @@
-# Scala 教學 - 第五部分:集合操作
+# Scala 教學 - 第五部分：Collection Operations（集合操作）
 
 > [« 上一篇：物件導向程式設計](scala_part4_oop.md) | [📚 目錄](../README.md) | [下一篇：模式比對 »](scala_part6_pattern_matching.md)
 
 ---
 
 ## 目錄
-1. [集合概覽](#1-集合概覽)
-2. [List 列表](#2-list-列表)
-3. [Set 集合](#3-set-集合)
-4. [Map 映射](#4-map-映射)
-5. [Vector 向量](#5-vector-向量)
-6. [Array 陣列](#6-array-陣列)
-7. [轉換操作](#7-轉換操作)
-8. [過濾與分組](#8-過濾與分組)
-9. [聚合操作](#9-聚合操作)
-10. [高階集合操作](#10-高階集合操作)
-11. [for 推導式](#11-for-推導式)
-12. [效能考量](#12-效能考量)
+1. [Collection 概覽](#1-collection集合概覽)
+2. [List](#2-list列表)
+3. [Set](#3-set集合)
+4. [Map](#4-map映射)
+5. [Vector](#5-vector向量)
+6. [Array](#6-array陣列)
+7. [Transformation](#7-transformation轉換操作)
+8. [Filtering 與 Grouping](#8-filtering過濾與-grouping分組)
+9. [Aggregation](#9-aggregation聚合操作)
+10. [Advanced Collection Operations](#10-advanced-collection-operations高階集合操作)
+11. [For Comprehension](#11-for-comprehensionfor-推導式)
+12. [Performance Considerations](#12-performance-considerations效能考量)
 13. [實作練習](#13-實作練習)
 
 ---
 
-## 1. 集合概覽
+## 1. Collection（集合）概覽
 
 ### 1.1 集合層次結構
 
@@ -49,7 +49,7 @@ Iterable
           +--- TreeMap
 ```
 
-### 1.2 可變 vs 不可變
+### 1.2 Mutable Collection（可變集合）與 Immutable Collection（不可變集合）
 
 ```scala
 // 不可變集合 (預設、推薦)
@@ -105,7 +105,7 @@ numbers.sortBy(-_)           // List(5, 4, 3, 2, 1)
 
 ---
 
-## 2. List 列表
+## 2. `List`（列表）
 
 ### 2.1 建立 List
 
@@ -265,7 +265,7 @@ List(List(1, 2, 3), List(4, 5, 6)).transpose
 
 ---
 
-## 3. Set 集合
+## 3. `Set`（集合）
 
 ### 3.1 建立 Set
 
@@ -402,7 +402,7 @@ if (!blacklist.contains(username)) {
 
 ---
 
-## 4. Map 映射
+## 4. `Map`（映射）
 
 ### 4.1 建立 Map
 
@@ -606,7 +606,7 @@ cache.getOrCompute("expensive") {
 
 ---
 
-## 5. Vector 向量
+## 5. `Vector`（向量）
 
 ### 5.1 Vector 基礎
 
@@ -683,7 +683,7 @@ val updated = vector.updated(100, 999)  // O(log32 N)
 
 ---
 
-## 6. Array 陣列
+## 6. `Array`（陣列）
 
 ### 6.1 Array 基礎
 
@@ -757,7 +757,7 @@ buffer.toArray      // 轉為固定大小的 Array
 
 ---
 
-## 7. 轉換操作
+## 7. Transformation（轉換操作）
 
 ### 7.1 map 系列
 
@@ -823,7 +823,7 @@ matrix.flatMap(row => row)  // 或 matrix.flatten
 
 ---
 
-## 8. 過濾與分組
+## 8. Filtering（過濾）與 Grouping（分組）
 
 ### 8.1 過濾操作
 
@@ -921,7 +921,7 @@ countOccurrences(List("a", "b", "a", "c", "b", "a"))
 
 ---
 
-## 9. 聚合操作
+## 9. Aggregation（聚合操作）
 
 ### 9.1 基本聚合
 
@@ -945,7 +945,7 @@ numbers.length         // 5
 numbers.count(_ % 2 == 0)  // 2 (偶數個數)
 ```
 
-### 9.2 reduce 和 fold
+### 9.2 `reduce` 與 `fold`
 
 ```scala
 val numbers = List(1, 2, 3, 4, 5)
@@ -1040,14 +1040,14 @@ val avg = numbers.foldLeft(Average(0, 0)) { (acc, n) =>
 avg.sum / avg.count  // 3.0
 ```
 
-Scala 3.3.8 使用 Scala 2.13 集合函式庫。平行集合由獨立的
-`scala-parallel-collections` 模組提供，而不是標準函式庫的 `List.aggregate`。
+Scala 3.3.8 的 Parallel Collections（平行集合）由獨立的
+`scala-parallel-collections` Module（模組）提供，不屬於標準函式庫。
 
 ---
 
-## 10. 高階集合操作
+## 10. Advanced Collection Operations（高階集合操作）
 
-### 10.1 zip 和 unzip
+### 10.1 `zip` 與 `unzip`
 
 ```scala
 val list1 = List(1, 2, 3)
@@ -1167,7 +1167,7 @@ list2.diff(list1)           // List(5, 6)
 
 ---
 
-## 11. for 推導式
+## 11. For Comprehension（for 推導式）
 
 ### 11.1 基本 for 推導式
 
@@ -1305,7 +1305,7 @@ val result3 = for {
 
 ---
 
-## 12. 效能考量
+## 12. Performance Considerations（效能考量）
 
 ### 12.1 集合選擇指南
 
@@ -1383,7 +1383,7 @@ val (sum2, max2, min2) = numbers.foldLeft((0, Int.MinValue, Int.MaxValue)) {
 }
 ```
 
-### 12.3 View (懶求值)
+### 12.3 `View`（惰性檢視）
 
 ```scala
 // 沒有 view - 每個操作建立中間集合

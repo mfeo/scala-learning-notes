@@ -1,25 +1,25 @@
-# Scala 教學 - 第七部分:錯誤處理
+# Scala 教學 - 第七部分：Error Handling（錯誤處理）
 
 > [« 上一篇：模式比對](scala_part6_pattern_matching.md) | [📚 目錄](../README.md) | [下一篇：進階主題 »](scala_part8_advanced_topics.md)
 
 ---
 
 ## 目錄
-1. [錯誤處理概覽](#1-錯誤處理概覽)
+1. [Error Handling 概覽](#1-error-handling錯誤處理概覽)
 2. [Option 型別](#2-option-型別)
 3. [Either 型別](#3-either-型別)
 4. [Try 型別](#4-try-型別)
-5. [異常處理](#5-異常處理)
-6. [錯誤處理模式](#6-錯誤處理模式)
-7. [組合錯誤處理](#7-組合錯誤處理)
-8. [自訂錯誤型別](#8-自訂錯誤型別)
-9. [驗證](#9-驗證)
+5. [Exception Handling](#5-exception-handling例外處理)
+6. [Error Handling Patterns](#6-error-handling-patterns錯誤處理模式)
+7. [Composing Error Handling](#7-composing-error-handling組合錯誤處理)
+8. [Custom Error Types](#8-custom-error-types自訂錯誤型別)
+9. [Validation](#9-validation驗證)
 10. [最佳實踐](#10-最佳實踐)
 11. [實作練習](#11-實作練習)
 
 ---
 
-## 1. 錯誤處理概覽
+## 1. Error Handling（錯誤處理）概覽
 
 ### 1.1 錯誤處理方式比較
 
@@ -504,7 +504,7 @@ retry(3) {
 
 ---
 
-## 5. 異常處理
+## 5. Exception Handling（例外處理）
 
 ### 5.1 try-catch-finally
 
@@ -597,7 +597,7 @@ val number = parseIntNew("42").getOrElse(0)
 
 ---
 
-## 6. 錯誤處理模式
+## 6. Error Handling Patterns（錯誤處理模式）
 
 ### 6.1 鏈式處理
 
@@ -641,7 +641,7 @@ val result2 = for {
 println(result2)  // Right("User50")
 ```
 
-### 6.2 累積錯誤
+### 6.2 Error Accumulation（錯誤累積）
 
 ```scala
 // 使用 Either 只能得到第一個錯誤
@@ -689,7 +689,7 @@ createPerson("", -5, "invalid")
 // Left(List("名稱不能為空", "年齡不能為負數", "Email 格式錯誤"))
 ```
 
-### 6.3 優雅降級
+### 6.3 Graceful Degradation（優雅降級）
 
 ```scala
 // 提供多層回退方案
@@ -717,7 +717,7 @@ println(getPrice(1))  // 99.99 (從快取取得)
 
 ---
 
-## 7. 組合錯誤處理
+## 7. Composing Error Handling（組合錯誤處理）
 
 ### 7.1 Option, Either, Try 互轉
 
@@ -804,9 +804,9 @@ registerUser("Alice", "alice@example.com") match {
 
 ---
 
-## 8. 自訂錯誤型別
+## 8. Custom Error Types（自訂錯誤型別）
 
-### 8.1 ADT 錯誤型別
+### 8.1 ADT（Algebraic Data Type，代數資料型別）錯誤型別
 
 ```scala
 // 使用 sealed trait 定義錯誤
@@ -889,7 +889,7 @@ def handleError(error: AppError): String = error match {
 
 ---
 
-## 9. 驗證
+## 9. Validation（驗證）
 
 ### 9.1 簡單驗證
 
@@ -950,7 +950,7 @@ UserValidator.validate("", -5, "invalid") match {
 // Email 格式錯誤
 ```
 
-### 9.2 組合驗證器
+### 9.2 Composable Validator（可組合驗證器）
 
 ```scala
 // 驗證器型別
@@ -1681,7 +1681,7 @@ object ValidationFramework {
 }
 ```
 
-### 練習 5: API 客戶端
+### 練習 5：API Client（Application Programming Interface Client，應用程式介面客戶端）
 
 ```scala
 import scala.util.{Try, Success, Failure}

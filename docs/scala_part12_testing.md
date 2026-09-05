@@ -1,23 +1,24 @@
-# Scala 教學 - 第十二部分: 測試
+# Scala 教學 - 第十二部分：Testing（測試）
 
 > [« 上一篇：Mill 與可執行範例](scala_part11_mill_examples.md) | [📚 目錄](../README.md)
 
 ---
 
 ## 目錄
-1. [測試目標](#1-測試目標)
-2. [MUnit 基礎](#2-munit-基礎)
+1. [Testing 目標](#1-testing測試目標)
+2. [MUnit 基礎](#2-munit-testing-framework測試框架基礎)
 3. [測試 Option 與 Either](#3-測試-option-與-either)
-4. [測試 Type Classes](#4-測試-type-classes)
-5. [測試 Extension Methods](#5-測試-extension-methods)
-6. [測試設計建議](#6-測試設計建議)
+4. [測試 Type Class](#4-測試-type-class型別類別)
+5. [測試 Extension Method](#5-測試-extension-method擴充方法)
+6. [Test Design 建議](#6-test-design測試設計建議)
 7. [實作練習](#7-實作練習)
 
 ---
 
-## 1. 測試目標
+## 1. Testing（測試）目標
 
-好的 Scala tests 應該驗證行為，而不是鎖死實作細節。純函數是最適合開始測試的對象，因為它們容易驗證，也不需要複雜 setup。
+好的 Scala Test（測試）應該驗證行為，而不是鎖死實作細節。Pure Function（純函數）
+容易驗證，也不需要複雜的 Setup（前置設定）。
 
 在本 repository 中，測試應該：
 - 讓教學範例可以執行。
@@ -27,9 +28,9 @@
 
 ---
 
-## 2. MUnit 基礎
+## 2. MUnit Testing Framework（測試框架）基礎
 
-MUnit 是輕量的 Scala testing framework，語法簡單。
+MUnit 是輕量的 Scala Testing Framework，語法簡單。
 
 ```scala
 class CalculatorSuite extends munit.FunSuite:
@@ -73,7 +74,7 @@ test("validates email"):
 
 ---
 
-## 4. 測試 Type Classes
+## 4. 測試 Type Class（型別類別）
 
 Type class tests 應驗證 generic functions 對外呈現的行為。
 
@@ -87,7 +88,7 @@ test("renders values with Show"):
 
 ---
 
-## 5. 測試 Extension Methods
+## 5. 測試 Extension Method（擴充方法）
 
 從使用者角度看，extension methods 就是一般方法。用一般呼叫方式測試即可：
 
@@ -101,14 +102,14 @@ test("returns the second list item"):
 
 ---
 
-## 6. 測試設計建議
+## 6. Test Design（測試設計）建議
 
-- 每個 test 聚焦一個 behavior。
-- test name 描述預期行為。
-- 優先測 pure functions 與 immutable test data。
-- 明確測 edge cases。
-- 除非多個 tests 共用同樣 setup，否則 fixtures 保持 local。
-- 不要直接測 compiler features；測你的程式對外暴露的行為。
+- 每個 Test Case（測試案例）聚焦一個 Behavior（行為）。
+- Test Name（測試名稱）描述預期行為。
+- 優先測 Pure Functions 與 Immutable Test Data（不可變測試資料）。
+- 明確測 Edge Cases（邊界案例）。
+- 除非多個測試共用同樣 Setup，否則 Fixture（測試固定資料）保持區域化。
+- 不要直接測 Compiler Features（編譯器功能）；測程式對外暴露的行為。
 
 ---
 

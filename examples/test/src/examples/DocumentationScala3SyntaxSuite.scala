@@ -40,6 +40,27 @@ class DocumentationScala3SyntaxSuite extends munit.FunSuite:
     val errors = typeCheckErrors("def accept[F[_], A]: Unit = ()")
     assertEquals(errors, Nil)
 
+  test("table of contents links target headings in the same document"):
+    val tableOfContentsLink = raw"^\d+\.\s+\[[^\]]+\]\(#([^\)]+)\)".r
+    val violations = markdownFiles().flatMap { path =>
+      val lines = Files.readAllLines(path, StandardCharsets.UTF_8).asScala.toList
+      val anchors = lines.collect {
+        case line if line.startsWith("#") => headingAnchor(line)
+      }.toSet
+
+      lines.zipWithIndex.flatMap { case (line, index) =>
+        tableOfContentsLink.findFirstMatchIn(line).flatMap { matched =>
+          val target = matched.group(1)
+          Option.when(!anchors.contains(target))(s"$path:${index + 1}: missing #$target")
+        }
+      }
+    }
+
+    assert(
+      violations.isEmpty,
+      violations.mkString("Broken table of contents links:\n", "\n", "")
+    )
+
   private def markdownFiles(): List[Path] =
     val docs = repositoryRoot.resolve("docs")
     val paths = Files.walk(docs)
@@ -76,3 +97,13 @@ class DocumentationScala3SyntaxSuite extends munit.FunSuite:
       .takeWhile(_ != null)
       .find(path => Files.isDirectory(path.resolve("docs")) && Files.exists(path.resolve("build.mill")))
       .getOrElse(fail("Could not locate the repository root"))
+
+  private def headingAnchor(line: String): String =
+    line
+      .dropWhile(_ == '#')
+      .trim
+      .replace("`", "")
+      .toLowerCase
+      .replaceAll("[^\\p{L}\\p{N} _-]", "")
+      .trim
+      .replaceAll("\\s+", "-")

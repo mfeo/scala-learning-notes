@@ -1,25 +1,25 @@
-# Scala 教學 - 第三部分:函數與方法
+# Scala 教學 - 第三部分：Functions and Methods（函數與方法）
 
 > [« 上一篇：基本語法](scala_part2_basic_syntax.md) | [📚 目錄](../README.md) | [下一篇：物件導向程式設計 »](scala_part4_oop.md)
 
 ---
 
 ## 目錄
-1. [函數基礎](#1-函數基礎)
-2. [方法 vs 函數](#2-方法-vs-函數)
+1. [Function 基礎](#1-function函數基礎)
+2. [Method 與 Function](#2-method方法與-function函數)
 3. [參數](#3-參數)
-4. [高階函數](#4-高階函數)
-5. [匿名函數與 Lambda](#5-匿名函數與-lambda)
-6. [閉包](#6-閉包)
-7. [柯里化](#7-柯里化currying)
-8. [部分應用函數](#8-部分應用函數)
-9. [遞迴函數](#9-遞迴函數)
-10. [函數組合](#10-函數組合)
+4. [Higher-Order Function](#4-higher-order-function高階函數)
+5. [Lambda Expression](#5-lambda-expression匿名函數)
+6. [Closure](#6-closure閉包)
+7. [Currying](#7-currying柯里化)
+8. [Partial Application](#8-partial-application部分應用)
+9. [Recursive Function](#9-recursive-function遞迴函數)
+10. [Function Composition](#10-function-composition函數組合)
 11. [實作練習](#11-實作練習)
 
 ---
 
-## 1. 函數基礎
+## 1. Function（函數）基礎
 
 ### 1.1 定義函數
 
@@ -83,7 +83,7 @@ def printMessage(msg: String): Unit = {
 }
 ```
 
-### 1.4 程序 (Procedure) 語法
+### 1.4 Unit-Returning Method（回傳 `Unit` 的方法）
 
 ```scala
 def greet(name: String): Unit = {
@@ -93,7 +93,7 @@ def greet(name: String): Unit = {
 
 ---
 
-## 2. 方法 vs 函數
+## 2. Method（方法）與 Function（函數）
 
 ### 2.1 方法 (Method)
 
@@ -127,7 +127,7 @@ val myFunc = add
 myFunc(5, 6)  // 11
 ```
 
-### 2.3 方法轉函數 (Eta Expansion)
+### 2.3 Eta Expansion（方法轉函數）
 
 ```scala
 class Calculator {
@@ -203,7 +203,7 @@ val user3 = createUser(
 )
 ```
 
-### 3.3 可變參數 (Varargs)
+### 3.3 Varargs（可變參數）
 
 ```scala
 def sum(numbers: Int*): Int = {
@@ -226,7 +226,7 @@ val numbers = List(1, 2, 3, 4, 5)
 sum(numbers*)  // 使用後置 * 展開序列
 ```
 
-### 3.4 傳名參數 (By-Name Parameters)
+### 3.4 By-Name Parameters（傳名參數）
 
 傳名參數在每次使用時才求值:
 
@@ -307,7 +307,7 @@ val result = time {
 
 ---
 
-## 4. 高階函數
+## 4. Higher-Order Function（高階函數）
 
 高階函數是接受函數作為參數或返回函數的函數。
 
@@ -426,7 +426,7 @@ transform(
 
 ---
 
-## 5. 匿名函數與 Lambda
+## 5. Lambda Expression（匿名函數）
 
 ### 5.1 基本語法
 
@@ -553,7 +553,7 @@ people
 
 ---
 
-## 6. 閉包
+## 6. Closure（閉包）
 
 閉包是引用了自由變數的函數,這些變數在函數定義時的環境中。
 
@@ -670,7 +670,7 @@ time { fastFib(40) }  // < 1 毫秒
 
 ---
 
-## 7. 柯里化(Currying)
+## 7. Currying（柯里化）
 
 柯里化是將多參數函數轉換為一系列單參數函數的技術。
 
@@ -789,7 +789,7 @@ findByCity(users)  // List(User(1, "Alice", 25, "Taipei"), User(3, "Charlie", 25
 
 ---
 
-## 8. 部分應用函數
+## 8. Partial Application（部分應用）
 
 部分應用函數是固定某些參數,產生新函數。
 
@@ -883,7 +883,7 @@ quote("引用文字")    // "\"引用文字\""
 
 ---
 
-## 9. 遞迴函數
+## 9. Recursive Function（遞迴函數）
 
 ### 9.1 基本遞迴
 
@@ -913,7 +913,7 @@ def gcd(a: Int, b: Int): Int = {
 gcd(48, 18)  // 6
 ```
 
-### 9.2 尾遞迴優化
+### 9.2 Tail Recursion（尾遞迴）優化
 
 尾遞迴是指遞迴呼叫是函數的最後一個操作,可以被編譯器優化為迴圈。
 
@@ -1038,7 +1038,7 @@ maxDepth(tree)  // 4
 
 ---
 
-## 10. 函數組合
+## 10. Function Composition（函數組合）
 
 ### 10.1 andThen 和 compose
 

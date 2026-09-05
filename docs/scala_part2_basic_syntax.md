@@ -1,25 +1,25 @@
-# Scala 教學 - 第二部分:基本語法
+# Scala 教學 - 第二部分：Basic Syntax（基本語法）
 
 > [« 上一篇：Scala 簡介與環境設置](scala_part1_introduction.md) | [📚 目錄](../README.md) | [下一篇：函數與方法 »](scala_part3_functions.md)
 
 ---
 
 ## 目錄
-1. [變數宣告](#1-變數宣告)
-2. [基本資料型別](#2-基本資料型別)
-3. [字串操作](#3-字串操作)
-4. [運算子](#4-運算子)
-5. [條件式](#5-條件式)
-6. [迴圈](#6-迴圈)
-7. [表達式 vs 陳述式](#7-表達式-vs-陳述式)
-8. [程式碼區塊](#8-程式碼區塊)
+1. [Variable Declaration](#1-variable-declaration變數宣告)
+2. [Basic Data Types](#2-basic-data-types基本資料型別)
+3. [String Operations](#3-string-operations字串操作)
+4. [Operators](#4-operators運算子)
+5. [Conditional Expressions](#5-conditional-expressions條件運算式)
+6. [Loops](#6-loops迴圈)
+7. [Expression 與 Statement](#7-expression表達式與-statement陳述式)
+8. [Code Blocks](#8-code-blocks程式碼區塊)
 9. [實作練習](#9-實作練習)
 
 ---
 
-## 1. 變數宣告
+## 1. Variable Declaration（變數宣告）
 
-### 1.1 val - 不可變變數 (推薦)
+### 1.1 `val`：Immutable Variable（不可變變數，推薦）
 
 `val` 定義的變數在初始化後不能重新賦值,類似於 Java 的 `final` 或 JavaScript 的 `const`。
 
@@ -30,7 +30,7 @@ val age: Int = 25
 // 錯誤!不能重新賦值
 // name = "Bob"  // 編譯錯誤: reassignment to val
 
-// 型別推導 - 編譯器自動推斷型別
+// Type Inference（型別推導）：編譯器自動推斷型別
 val city = "Taipei"        // 推導為 String
 val population = 2600000   // 推導為 Int
 val temperature = 25.5     // 推導為 Double
@@ -43,7 +43,7 @@ val isCapital = true       // 推導為 Boolean
 - 支援函數式程式設計
 - 多執行緒環境更安全
 
-### 1.2 var - 可變變數
+### 1.2 `var`：Mutable Variable（可變變數）
 
 `var` 定義的變數可以重新賦值。
 
@@ -100,7 +100,7 @@ val list1 = List(1, 2, 3)
 val list2 = list1 :+ 4  // 建立新的 list
 ```
 
-### 1.3 lazy val - 延遲初始化
+### 1.3 `lazy val`：Lazy Initialization（延遲初始化）
 
 `lazy val` 只在第一次存取時才會初始化,適合用於耗時的計算。
 
@@ -165,11 +165,11 @@ println(Constants.PI)
 
 ---
 
-## 2. 基本資料型別
+## 2. Basic Data Types（基本資料型別）
 
 Scala 中所有的型別都是物件,沒有原始型別 (primitive types)。
 
-### 2.1 數值型別
+### 2.1 Numeric Types（數值型別）
 
 ```scala
 // 整數型別
@@ -186,7 +186,7 @@ val doubleVal: Double = 3.14159   // 64-bit
 val decimal = 42
 val hex = 0x2A          // 16進位
 val binary = 0b101010   // Scala 3.3.8 支援的二進位字面值
-val octal = 42          // Scala 3 不支援 052 這類舊式八進位字面值
+val decimal = 42        // 十進位字面值
 
 // 使用底線增加可讀性
 val million = 1_000_000
@@ -217,7 +217,7 @@ val z: String = x.toString    // "10"
 val w: Long = x.toLong        // 10L
 ```
 
-### 2.2 布林型別
+### 2.2 Boolean Type（布林型別）
 
 ```scala
 val isTrue: Boolean = true
@@ -238,7 +238,7 @@ val result1 = false && expensiveCheck()  // 不會執行 expensiveCheck()
 val result2 = true || expensiveCheck()   // 不會執行 expensiveCheck()
 ```
 
-### 2.3 字元型別
+### 2.3 Character Type（字元型別）
 
 ```scala
 val char: Char = 'A'
@@ -261,7 +261,7 @@ println(a.isDigit)      // false
 println(a.toLower)      // 'a'
 ```
 
-### 2.4 字串型別
+### 2.4 String Type（字串型別）
 
 ```scala
 val str: String = "Hello, Scala"
@@ -373,9 +373,9 @@ Int Double Char String List ...
 
 ---
 
-## 3. 字串操作
+## 3. String Operations（字串操作）
 
-### 3.1 字串插值
+### 3.1 String Interpolation（字串插值）
 
 Scala 提供三種字串插值器:
 
@@ -615,7 +615,7 @@ def buildLargeString(n: Int): String = {
 
 ---
 
-## 4. 運算子
+## 4. Operators（運算子）
 
 ### 4.1 算術運算子
 
@@ -716,7 +716,7 @@ x >> 1   // 2  (0010, 右移)
 x >>> 1  // 2  (0010, 無符號右移)
 ```
 
-### 4.4 運算子優先順序
+### 4.4 Operator Precedence（運算子優先順序）
 
 ```scala
 // 從高到低
@@ -779,7 +779,7 @@ val v4 = v1 * 2.0       // Vector2D(2.0, 4.0)
 
 ---
 
-## 5. 條件式
+## 5. Conditional Expressions（條件運算式）
 
 ### 5.1 if-else 表達式
 
@@ -879,7 +879,7 @@ def process(a: Boolean, b: Boolean, c: Boolean): String = {
 
 ---
 
-## 6. 迴圈
+## 6. Loops（迴圈）
 
 ### 6.1 for 迴圈
 
@@ -979,7 +979,7 @@ for {
 }
 ```
 
-### 6.2 for 推導式 (for comprehension)
+### 6.2 For Comprehension（for 推導式）
 
 for 推導式會產生新的集合:
 
@@ -1058,7 +1058,7 @@ while (input != "quit") {
 ### 6.4 先執行本體再測試條件
 
 ```scala
-// Scala 3 已移除 do-while 語法。若本體必須先執行，再把它放入 while 條件區塊。
+// 若本體必須先執行，再把它放入 while 的 block condition（區塊條件）。
 var count = 0
 while {
   println(s"Count: $count")
@@ -1126,7 +1126,7 @@ val firstEven = (1 to 10).find(_ % 2 == 0)  // Some(2)
 
 ---
 
-## 7. 表達式 vs 陳述式
+## 7. Expression（表達式）與 Statement（陳述式）
 
 ### 7.1 理解差異
 
@@ -1198,7 +1198,7 @@ val loop: Unit = while (x < 30) {
 
 ---
 
-## 8. 程式碼區塊
+## 8. Code Blocks（程式碼區塊）
 
 ### 8.1 區塊語法
 
@@ -1225,7 +1225,7 @@ def calculate(a: Int, b: Int): Int = {
 }
 ```
 
-### 8.2 區塊的作用域
+### 8.2 Block Scope（區塊作用域）
 
 ```scala
 val outer = "outer"

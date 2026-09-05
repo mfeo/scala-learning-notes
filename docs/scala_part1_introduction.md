@@ -1,4 +1,4 @@
-# Scala 教學 - 第一部分:Scala 簡介與環境設置
+# Scala 教學 - 第一部分：Introduction and Setup（簡介與環境設置）
 
 > [📚 目錄](../README.md) | [下一篇：基本語法 »](scala_part2_basic_syntax.md)
 
@@ -10,8 +10,8 @@
 3. [環境安裝](#3-環境安裝)
 4. [開發工具選擇](#4-開發工具選擇)
 5. [第一個 Scala 程式](#5-第一個-scala-程式)
-6. [專案結構與建構工具](#6-專案結構與建構工具)
-7. [REPL 互動式環境](#7-repl-互動式環境)
+6. [Project Structure and Build Tools](#6-project-structure-and-build-tools專案結構與建置工具)
+7. [REPL](#7-repl互動式環境)
 
 ---
 
@@ -23,12 +23,12 @@ Scala (Scalable Language) 是一個現代化的多範型程式語言,由瑞士�
 
 Scala 結合了兩種主要的程式設計典範:
 
-**物件導向程式設計 (OOP)**
+**Object-Oriented Programming（物件導向程式設計，OOP）**
 - 一切皆為物件
 - 支援類別、繼承、多型
 - 強大的型別系統
 
-**函數式程式設計 (FP)**
+**Functional Programming（函數式程式設計，FP）**
 - 函數是一等公民
 - 不可變性
 - 高階函數
@@ -73,7 +73,7 @@ val now = new Date()
 val file = new File("/path/to/file")
 ```
 
-#### 靜態型別系統 + 型別推導
+#### Static Type System（靜態型別系統）與 Type Inference（型別推導）
 ```scala
 // 有型別推導,不需要明確指定型別
 val name = "Alice"  // 自動推導為 String
@@ -113,7 +113,7 @@ public class Person {
 case class Person(name: String, var age: Int)
 ```
 
-#### 函數式程式設計支援
+#### Functional Programming（函數式程式設計）支援
 ```scala
 // 高階函數
 val numbers = List(1, 2, 3, 4, 5)
@@ -417,11 +417,11 @@ java Hello
 
 ---
 
-## 6. 專案結構與建構工具
+## 6. Project Structure and Build Tools（專案結構與建置工具）
 
 ### 6.1 使用 sbt 建立專案
 
-sbt (Scala Build Tool) 是 Scala 的標準建構工具。
+sbt（Scala Build Tool）是 Scala 的建置工具。
 
 **快速建立專案:**
 ```bash
@@ -587,7 +587,10 @@ libraryDependencies ++= Seq(
 
 ---
 
-## 7. REPL 互動式環境
+## 7. REPL（互動式環境）
+
+REPL 是 Read-Eval-Print Loop（讀取、求值、輸出循環），讓使用者逐段輸入並執行
+Scala 程式碼。
 
 ### 7.1 REPL 基本使用
 
@@ -829,14 +832,10 @@ sbt test
 
 ## 9. 常見問題解答
 
-### Q1: Scala 2 vs Scala 3,應該學哪一個?
+### Q1：為什麼本指南使用 Scala 3.3.8？
 
-**建議: 學 Scala 3**
-
-- Scala 3 是未來方向
-- 語法更簡潔
-- 型別系統更強大
-- 但 Scala 2 的程式碼仍然很多,兩者互通性良好
+Scala 3.3.8 提供現代化語法、清楚的 Contextual Abstraction（上下文抽象），以及
+更完整的型別系統；固定版本也能確保所有範例使用相同的編譯器行為。
 
 ### Q2: sbt 編譯很慢怎麼辦?
 

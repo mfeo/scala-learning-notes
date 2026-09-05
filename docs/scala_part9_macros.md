@@ -1,24 +1,24 @@
-# Scala 教學 - 宏 (Macros)
+# Scala 教學 - Scala 3 Macros（Scala 3 巨集）
 
 > [« 上一篇：上下文抽象與型別類別](scala_part8_advanced_topics.md) | [📚 目錄](../README.md)
 
 ---
 
 ## 目錄
-1. [宏概覽](#1-宏概覽)
-2. [Scala 3 宏模型](#2-scala-3-宏模型)
-3. [編譯時計算](#3-編譯時計算)
+1. [Macro 概覽](#1-macro巨集概覽)
+2. [Scala 3 Macro 模型](#2-scala-3-macro巨集模型)
+3. [Compile-Time Computation](#3-compile-time-computation編譯時計算)
 4. [Scala 3 Inline](#4-scala-3-inline)
-5. [引號與拼接](#5-引號與拼接)
-6. [宏實作範例](#6-宏實作範例)
-7. [反射與型別操作](#7-反射與型別操作)
-8. [實用宏範例](#8-實用宏範例)
+5. [Quote 與 Splice](#5-quote引號與-splice拼接)
+6. [Macro 實作範例](#6-macro巨集實作範例)
+7. [Reflection 與型別操作](#7-reflection反射與型別操作)
+8. [實用 Macro 範例](#8-實用-macro巨集範例)
 9. [除錯與測試](#9-除錯與測試)
 10. [最佳實踐](#10-最佳實踐)
 
 ---
 
-## 1. 宏概覽
+## 1. Macro（巨集）概覽
 
 ### 1.1 什麼是宏?
 
@@ -90,15 +90,15 @@ html {
 // - 錯誤訊息可能不清楚
 
 // 4. 版本相容性
-// - Scala 2 和 Scala 3 宏不相容
-// - 需要分別維護
+// - 巨集實作會依賴編譯器提供的程式設計介面
+// - 升級編譯器時需要重新驗證
 
 // 因此:只在必要時使用宏!
 ```
 
 ---
 
-## 2. Scala 3 宏模型
+## 2. Scala 3 Macro（巨集）模型
 
 Scala 3 巨集以 `inline`、引號、拼接與帶型別的運算式為核心。它與先前的反射式巨集
 系統不相容，因此本章只示範 Scala 3.3.8 寫法。
@@ -136,9 +136,9 @@ val result = debug(10 + 20)  // 輸出: "10 + 20 = 30"
 
 ---
 
-## 3. 編譯時計算
+## 3. Compile-Time Computation（編譯時計算）
 
-### 3.1 Inline 基礎
+### 3.1 `inline`（內聯）基礎
 
 ```scala
 // inline 關鍵字告訴編譯器在呼叫處展開程式碼
@@ -165,7 +165,7 @@ val result2 = addInline(1, 2)
 // - 可以用於宏
 ```
 
-### 3.2 Inline Match
+### 3.2 Inline Match（內聯比對）
 
 ```scala
 // inline match 在編譯時求值
@@ -196,7 +196,7 @@ val env = getConfig("env")  // "production"
 // val bad = getConfig("invalid")  // 編譯錯誤!
 ```
 
-### 3.3 Compiletime 操作
+### 3.3 Compile-Time Operations（編譯期操作）
 
 ```scala
 import scala.compiletime.*
@@ -271,7 +271,7 @@ val m = max(10, 20)
 // 展開為: val m = 20
 ```
 
-### 4.2 Transparent Inline
+### 4.2 Transparent Inline（透明內聯）
 
 ```scala
 // transparent inline 保留精確型別
@@ -301,9 +301,9 @@ transparent inline def chooseType[A, B](inline useA: Boolean): Any = {
 
 ---
 
-## 5. 引號與拼接
+## 5. Quote（引號）與 Splice（拼接）
 
-### 5.1 引號 (Quotes)
+### 5.1 Quote（引號）
 
 ```scala
 import scala.quoted.*
@@ -330,7 +330,7 @@ def makeList(using Quotes): Expr[List[Int]] = {
 }
 ```
 
-### 5.2 拼接 (Splicing)
+### 5.2 Splice（拼接）
 
 ```scala
 import scala.quoted.*
@@ -404,7 +404,7 @@ def simplify(expr: Expr[Int])(using Quotes): Expr[Int] = {
 
 ---
 
-## 6. 宏實作範例
+## 6. Macro（巨集）實作範例
 
 ### 6.1 Debug 宏
 
@@ -559,9 +559,9 @@ println(shower.show(p))  // "Person(...)"
 
 ---
 
-## 7. 反射與型別操作
+## 7. Reflection（反射）與型別操作
 
-### 7.1 型別反射
+### 7.1 Type Reflection（型別反射）
 
 ```scala
 import scala.quoted.*
@@ -687,7 +687,7 @@ val result = analyze[List, Int]
 
 ---
 
-## 8. 實用宏範例
+## 8. 實用 Macro（巨集）範例
 
 ### 8.1 JSON 宏
 
@@ -1069,7 +1069,7 @@ class DebugMacroTest {
 
 ## 11. 實作練習
 
-### 練習 1: Logging 宏
+### 練習 1：Logging（日誌記錄）Macro
 
 ```scala
 import scala.quoted.*
@@ -1139,7 +1139,7 @@ object App {
 }
 ```
 
-### 練習 2: Builder 宏
+### 練習 2：Builder（建構器）Macro
 
 ```scala
 import scala.quoted.*
@@ -1372,7 +1372,7 @@ val age = Validators.inRange(25, 0, 150)  // OK
 // val badAge = Validators.inRange(200, 0, 150)  // 編譯錯誤!
 ```
 
-### 練習 5: 序列化宏
+### 練習 5：Serialization（序列化）Macro
 
 ```scala
 import scala.quoted.*
