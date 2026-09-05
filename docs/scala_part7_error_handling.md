@@ -256,9 +256,8 @@ result1.isLeft    // false
 result2.isRight   // false
 result2.isLeft    // true
 
-// 取值 (不安全)
-result1.right.get    // 5 - 已廢棄
-result1.getOrElse(0) // 5 - 推薦
+// 提供明確的失敗預設值
+result1.getOrElse(0) // 5
 
 // 模式比對
 result1 match {
@@ -1780,7 +1779,7 @@ object ApiClient {
       body <- getWithRetry(s"$baseUrl/users")
       data <- parseJson(body)
       users <- data.get("users") match {
-        case Some(list: List[_]) => Right(list.map(_.toString))
+        case Some(list: List[?]) => Right(list.map(_.toString))
         case _ => Left(ParseError("無法解析用戶列表"))
       }
     } yield users

@@ -463,10 +463,10 @@ typeMatch(true)     // "boolean: true"
 
 ```scala
 def collectionMatch(x: Any): String = x match {
-  case list: List[_] => s"list of ${list.length} elements"
-  case set: Set[_] => s"set of ${set.size} elements"
-  case map: Map[_, _] => s"map of ${map.size} entries"
-  case arr: Array[_] => s"array of ${arr.length} elements"
+  case list: List[?] => s"list of ${list.length} elements"
+  case set: Set[?] => s"set of ${set.size} elements"
+  case map: Map[?, ?] => s"map of ${map.size} entries"
+  case arr: Array[?] => s"array of ${arr.length} elements"
   case _ => "other type"
 }
 
@@ -492,11 +492,11 @@ buggyMatch(List("a", "b"))     // "list of ints" - incorrect!
 
 // Correct approach: check the element type
 def correctMatch(x: Any): String = x match {
-  case list: List[_] if list.nonEmpty && list.head.isInstanceOf[Int] =>
+  case list: List[?] if list.nonEmpty && list.head.isInstanceOf[Int] =>
     "list of ints"
-  case list: List[_] if list.nonEmpty && list.head.isInstanceOf[String] =>
+  case list: List[?] if list.nonEmpty && list.head.isInstanceOf[String] =>
     "list of strings"
-  case list: List[_] => "empty list"
+  case list: List[?] => "empty list"
   case _ => "other"
 }
 ```
@@ -1414,7 +1414,7 @@ object TreeOps {
   }
   
   // Search
-  def contains[A](tree: Tree[A], target: A)(implicit ord: Ordering[A]): Boolean = {
+  def contains[A](tree: Tree[A], target: A)(using ord: Ordering[A]): Boolean = {
     tree match {
       case Empty => false
       case Node(value, left, right) =>
@@ -1425,7 +1425,7 @@ object TreeOps {
   }
   
   // Insert (BST)
-  def insert[A](tree: Tree[A], elem: A)(implicit ord: Ordering[A]): Tree[A] = {
+  def insert[A](tree: Tree[A], elem: A)(using ord: Ordering[A]): Tree[A] = {
     tree match {
       case Empty => Node(elem, Empty, Empty)
       case Node(value, left, right) =>

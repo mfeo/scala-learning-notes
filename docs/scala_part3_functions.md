@@ -86,10 +86,6 @@ def printMessage(msg: String): Unit = {
 ### 1.4 程序 (Procedure) 語法
 
 ```scala
-// 一般 Scala 3.3.8 模式不支援 Scala 2 的程序語法：
-// def greet(name: String) { println(s"Hello, $name") }
-
-// Scala 3 語法
 def greet(name: String): Unit = {
   println(s"Hello, $name")
 }
@@ -1148,7 +1144,7 @@ validate("hi", nonEmpty, minLength(3), maxLength(10))     // Left("長度必須�
 **函數管道操作符:**
 
 ```scala
-implicit class PipelineOps[A](val value: A) extends AnyVal {
+extension [A](value: A) {
   def |>[B](f: A => B): B = f(value)
 }
 
@@ -1326,7 +1322,7 @@ object FunctionalCache {
 ```scala
 object FunctionPipeline {
   // 定義管道操作符
-  implicit class PipeOps[A](val value: A) extends AnyVal {
+  extension [A](value: A) {
     def |>[B](f: A => B): B = f(value)
   }
   
@@ -1419,7 +1415,7 @@ object TreeOperations {
   case class Node[A](value: A, left: BST[A], right: BST[A]) extends BST[A]
   
   // 插入元素
-  def insert[A](tree: BST[A], elem: A)(implicit ord: Ordering[A]): BST[A] = tree match {
+  def insert[A](tree: BST[A], elem: A)(using ord: Ordering[A]): BST[A] = tree match {
     case Empty => Node(elem, Empty, Empty)
     case Node(value, left, right) =>
       if (ord.lt(elem, value)) Node(value, insert(left, elem), right)
@@ -1428,7 +1424,7 @@ object TreeOperations {
   }
   
   // 搜尋元素
-  def contains[A](tree: BST[A], elem: A)(implicit ord: Ordering[A]): Boolean = tree match {
+  def contains[A](tree: BST[A], elem: A)(using ord: Ordering[A]): Boolean = tree match {
     case Empty => false
     case Node(value, left, right) =>
       if (ord.lt(elem, value)) contains(left, elem)

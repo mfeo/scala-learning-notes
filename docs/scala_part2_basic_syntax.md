@@ -438,7 +438,7 @@ val regex = raw"\d{3}-\d{4}"
 **自訂插值器:**
 ```scala
 // 進階主題 - 可以建立自己的插值器
-implicit class JsonHelper(val sc: StringContext) extends AnyVal {
+extension (sc: StringContext) {
   def json(args: Any*): String = {
     // 自訂邏輯
     sc.parts.zip(args).map { case (p, a) => p + a }.mkString

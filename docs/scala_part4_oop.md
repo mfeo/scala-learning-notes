@@ -1079,8 +1079,7 @@ class Zoo[T <: Animal](val animal: T) {
 // 下界 (Lower Bound): T 必須是 Dog 或其父類別
 class DogList[T >: Dog](val dogs: List[T])
 
-// 視圖界定 (View Bound) - Scala 2.x,已廢棄
-// 使用隱式轉換代替
+// Scala 3 以 using 參數明確要求 Conversion[T, U]
 ```
 
 ### 9.3 型別變異 (Variance)

@@ -86,10 +86,6 @@ def printMessage(msg: String): Unit = {
 ### 1.4 Procedure Syntax
 
 ```scala
-// Scala 2 procedure syntax is not supported in normal Scala 3.3.8 mode:
-// def greet(name: String) { println(s"Hello, $name") }
-
-// Scala 3 syntax
 def greet(name: String): Unit = {
   println(s"Hello, $name")
 }
@@ -1147,7 +1143,7 @@ validate("hi", nonEmpty, minLength(3), maxLength(10))     // Left("Length must b
 **Function Pipeline Operator:**
 
 ```scala
-implicit class PipelineOps[A](val value: A) extends AnyVal {
+extension [A](value: A) {
   def |>[B](f: A => B): B = f(value)
 }
 
@@ -1325,7 +1321,7 @@ object FunctionalCache {
 ```scala
 object FunctionPipeline {
   // Define the pipeline operator
-  implicit class PipeOps[A](val value: A) extends AnyVal {
+  extension [A](value: A) {
     def |>[B](f: A => B): B = f(value)
   }
   
@@ -1418,7 +1414,7 @@ object TreeOperations {
   case class Node[A](value: A, left: BST[A], right: BST[A]) extends BST[A]
   
   // Insert an element
-  def insert[A](tree: BST[A], elem: A)(implicit ord: Ordering[A]): BST[A] = tree match {
+  def insert[A](tree: BST[A], elem: A)(using ord: Ordering[A]): BST[A] = tree match {
     case Empty => Node(elem, Empty, Empty)
     case Node(value, left, right) =>
       if (ord.lt(elem, value)) Node(value, insert(left, elem), right)
@@ -1427,7 +1423,7 @@ object TreeOperations {
   }
   
   // Search for an element
-  def contains[A](tree: BST[A], elem: A)(implicit ord: Ordering[A]): Boolean = tree match {
+  def contains[A](tree: BST[A], elem: A)(using ord: Ordering[A]): Boolean = tree match {
     case Empty => false
     case Node(value, left, right) =>
       if (ord.lt(elem, value)) contains(left, elem)

@@ -256,9 +256,8 @@ result1.isLeft    // false
 result2.isRight   // false
 result2.isLeft    // true
 
-// Extracting the value (unsafe)
-result1.right.get    // 5 - deprecated
-result1.getOrElse(0) // 5 - recommended
+// Providing an explicit fallback for failure
+result1.getOrElse(0) // 5
 
 // Pattern matching
 result1 match {
@@ -1780,7 +1779,7 @@ object ApiClient {
       body <- getWithRetry(s"$baseUrl/users")
       data <- parseJson(body)
       users <- data.get("users") match {
-        case Some(list: List[_]) => Right(list.map(_.toString))
+        case Some(list: List[?]) => Right(list.map(_.toString))
         case _ => Left(ParseError("Cannot parse user list"))
       }
     } yield users
@@ -1869,7 +1868,7 @@ You have learned:
 6. Error handling
 
 Suggested next steps:
-- Deep dive into [Advanced Topics](scala_part8_advanced_topics.md) (implicit conversions, type system)
+- Deep dive into [Contextual Abstractions and Type Classes](scala_part8_advanced_topics.md)
 - Implement a complete project
 - Learn the Scala ecosystem (Akka, Play, Cats)
 

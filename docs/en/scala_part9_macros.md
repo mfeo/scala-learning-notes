@@ -1,12 +1,12 @@
 # Scala Tutorial - Macros
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Advanced Topics](scala_part8_advanced_topics.md)
+> [📚 Table of Contents](../../README.md) | [« Prev: Contextual Abstractions and Type Classes](scala_part8_advanced_topics.md)
 
 ---
 
 ## Table of Contents
 1. [Macro Overview](#1-macro-overview)
-2. [Scala 2 vs Scala 3 Macros](#2-scala-2-vs-scala-3-macros)
+2. [Scala 3 Macro Model](#2-scala-3-macro-model)
 3. [Compile-Time Computation](#3-compile-time-computation)
 4. [Scala 3 Inline](#4-scala-3-inline)
 5. [Quotes and Splicing](#5-quotes-and-splicing)
@@ -98,53 +98,12 @@ html {
 
 ---
 
-## 2. Scala 2 vs Scala 3 Macros
+## 2. Scala 3 Macro Model
 
-### 2.1 Scala 2 Macro System
-
-```scala
-// Scala 2 macros use the reflection API (deprecated)
-
-import scala.language.experimental.macros
-import scala.reflect.macros.blackbox
-
-object Macros {
-  // Macro interface
-  def debug(x: Any): Unit = macro debugImpl
-  
-  // Macro implementation
-  def debugImpl(c: blackbox.Context)(x: c.Tree): c.Tree = {
-    import c.universe._
-    
-    val valueTree = x
-    val valueString = show(x)
-    
-    q"""
-      {
-        val value = $valueTree
-        println(s"$valueString = " + value)
-        value
-      }
-    """
-  }
-}
-
-// Usage
-val x = 10
-val y = 20
-Macros.debug(x + y)  // Output: "x + y = 30"
-
-// Issues:
-// - Complex API
-// - Poor type safety
-// - Requires separate compilation units
-```
-
-### 2.2 Scala 3 Macro System
+Scala 3 macros are based on `inline`, quotes, splices, and typed expressions. They are incompatible
+with the earlier reflection-based macro system, so this chapter shows only Scala 3.3.8 syntax.
 
 ```scala
-// Scala 3 uses a new macro system: simpler and safer
-
 // 1. Inline
 inline def square(x: Int): Int = x * x
 
@@ -174,37 +133,6 @@ val result = debug(10 + 20)  // Output: "10 + 20 = 30"
 // - Cleaner API
 // - Macro definitions and call sites can share a project, but a macro cannot
 //   be called from the same source file in which it is defined
-```
-
-### 2.3 Migration Guide
-
-```scala
-// Scala 2 → Scala 3 migration
-
-// Scala 2 style
-import scala.reflect.macros.blackbox.Context
-import scala.language.experimental.macros
-
-def myMacro(x: Int): Int = macro myMacroImpl
-
-def myMacroImpl(c: Context)(x: c.Tree): c.Tree = {
-  import c.universe._
-  q"$x * 2"
-}
-
-// Scala 3 equivalent
-import scala.quoted.*
-
-inline def myMacro(x: Int): Int = ${myMacroImpl('x)}
-
-def myMacroImpl(x: Expr[Int])(using Quotes): Expr[Int] = {
-  '{ $x * 2 }
-}
-
-// Recommendations:
-// - Use Scala 3 macros for new projects
-// - Old projects can keep Scala 2 macros
-// - Be aware of compatibility when using cross-version libraries
 ```
 
 ---
@@ -731,7 +659,7 @@ val values = fieldValues(user)
 import scala.quoted.*
 
 // Inspect type parameters
-def analyzeGeneric[F[_], A](using 
+def analyzeGeneric[F[_], A](using
   Quotes, 
   Type[F], 
   Type[A]
@@ -746,7 +674,7 @@ def analyzeGeneric[F[_], A](using
 
 inline def analyze[F[_], A]: String = ${analyzeGenericImpl[F, A]}
 
-def analyzeGenericImpl[F[_], A](using 
+def analyzeGenericImpl[F[_], A](using
   Quotes, 
   Type[F], 
   Type[A]
@@ -1591,4 +1519,4 @@ Remember: in most cases, ordinary Scala features are sufficient!
 
 ---
 
-> [📚 Table of Contents](../../README.md) | [« Prev: Advanced Topics](scala_part8_advanced_topics.md)
+> [📚 Table of Contents](../../README.md) | [« Prev: Contextual Abstractions and Type Classes](scala_part8_advanced_topics.md)

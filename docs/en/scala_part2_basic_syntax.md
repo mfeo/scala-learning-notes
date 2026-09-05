@@ -438,7 +438,7 @@ val regex = raw"\d{3}-\d{4}"
 **Custom interpolators:**
 ```scala
 // Advanced topic - you can create your own interpolators
-implicit class JsonHelper(val sc: StringContext) extends AnyVal {
+extension (sc: StringContext) {
   def json(args: Any*): String = {
     // custom logic
     sc.parts.zip(args).map { case (p, a) => p + a }.mkString

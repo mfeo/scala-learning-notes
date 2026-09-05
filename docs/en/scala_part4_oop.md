@@ -1079,8 +1079,7 @@ class Zoo[T <: Animal](val animal: T) {
 // Lower Bound: T must be Dog or a superclass of it
 class DogList[T >: Dog](val dogs: List[T])
 
-// View Bound (Scala 2.x, deprecated)
-// Use implicit conversions instead
+// Scala 3 explicitly requests Conversion[T, U] with a using parameter
 ```
 
 ### 9.3 Type Variance

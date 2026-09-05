@@ -1,12 +1,12 @@
 # Scala 教學 - 宏 (Macros)
 
-> [« 上一篇：進階主題](scala_part8_advanced_topics.md) | [📚 目錄](../README.md)
+> [« 上一篇：上下文抽象與型別類別](scala_part8_advanced_topics.md) | [📚 目錄](../README.md)
 
 ---
 
 ## 目錄
 1. [宏概覽](#1-宏概覽)
-2. [Scala 2 vs Scala 3 宏](#2-scala-2-vs-scala-3-宏)
+2. [Scala 3 宏模型](#2-scala-3-宏模型)
 3. [編譯時計算](#3-編譯時計算)
 4. [Scala 3 Inline](#4-scala-3-inline)
 5. [引號與拼接](#5-引號與拼接)
@@ -98,53 +98,12 @@ html {
 
 ---
 
-## 2. Scala 2 vs Scala 3 宏
+## 2. Scala 3 宏模型
 
-### 2.1 Scala 2 宏系統
-
-```scala
-// Scala 2 宏使用反射 API (已不推薦)
-
-import scala.language.experimental.macros
-import scala.reflect.macros.blackbox
-
-object Macros {
-  // 宏介面
-  def debug(x: Any): Unit = macro debugImpl
-  
-  // 宏實作
-  def debugImpl(c: blackbox.Context)(x: c.Tree): c.Tree = {
-    import c.universe._
-    
-    val valueTree = x
-    val valueString = show(x)
-    
-    q"""
-      {
-        val value = $valueTree
-        println(s"$valueString = " + value)
-        value
-      }
-    """
-  }
-}
-
-// 使用
-val x = 10
-val y = 20
-Macros.debug(x + y)  // 輸出: "x + y = 30"
-
-// 問題:
-// - API 複雜
-// - 型別安全性差
-// - 需要分離的編譯單元
-```
-
-### 2.2 Scala 3 宏系統
+Scala 3 巨集以 `inline`、引號、拼接與帶型別的運算式為核心。它與先前的反射式巨集
+系統不相容，因此本章只示範 Scala 3.3.8 寫法。
 
 ```scala
-// Scala 3 使用新的宏系統:更簡單、更安全
-
 // 1. Inline (內聯)
 inline def square(x: Int): Int = x * x
 
@@ -173,37 +132,6 @@ val result = debug(10 + 20)  // 輸出: "10 + 20 = 30"
 // - 型別安全
 // - 更清晰的 API
 // - 巨集定義與呼叫端可位於同一專案，但不能在定義巨集的同一來源檔案中呼叫它
-```
-
-### 2.3 遷移指南
-
-```scala
-// Scala 2 → Scala 3 遷移
-
-// Scala 2 寫法
-import scala.reflect.macros.blackbox.Context
-import scala.language.experimental.macros
-
-def myMacro(x: Int): Int = macro myMacroImpl
-
-def myMacroImpl(c: Context)(x: c.Tree): c.Tree = {
-  import c.universe._
-  q"$x * 2"
-}
-
-// Scala 3 等價寫法
-import scala.quoted.*
-
-inline def myMacro(x: Int): Int = ${myMacroImpl('x)}
-
-def myMacroImpl(x: Expr[Int])(using Quotes): Expr[Int] = {
-  '{ $x * 2 }
-}
-
-// 建議:
-// - 新專案使用 Scala 3 宏
-// - 舊專案可以保持 Scala 2 宏
-// - 使用跨版本函式庫時注意相容性
 ```
 
 ---
@@ -730,7 +658,7 @@ val values = fieldValues(user)
 import scala.quoted.*
 
 // 檢查型別參數
-def analyzeGeneric[F[_], A](using 
+def analyzeGeneric[F[_], A](using
   Quotes, 
   Type[F], 
   Type[A]
@@ -745,7 +673,7 @@ def analyzeGeneric[F[_], A](using
 
 inline def analyze[F[_], A]: String = ${analyzeGenericImpl[F, A]}
 
-def analyzeGenericImpl[F[_], A](using 
+def analyzeGenericImpl[F[_], A](using
   Quotes, 
   Type[F], 
   Type[A]
@@ -1590,4 +1518,4 @@ val point = codec.decode(bytes)
 
 ---
 
-> [« 上一篇：進階主題](scala_part8_advanced_topics.md) | [📚 目錄](../README.md)
+> [« 上一篇：上下文抽象與型別類別](scala_part8_advanced_topics.md) | [📚 目錄](../README.md)

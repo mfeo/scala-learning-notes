@@ -12,7 +12,7 @@
 5. [Opaque Types](#5-opaque-types)
 6. [Exports](#6-exports)
 7. [Derives](#7-derives)
-8. [Migration Notes](#8-migration-notes)
+8. [Scala 3.3.8 Conventions](#8-scala-338-conventions)
 9. [Practice Exercises](#9-practice-exercises)
 
 ---
@@ -129,8 +129,8 @@ The standard tuple operations, match types, and kind-polymorphic `Tuple` and
 
 ## 2. Contextual Abstractions with given and using
 
-Scala 2 code often used `implicit val`, `implicit def`, and implicit parameter
-lists. Scala 3.3.8 separates each intent with dedicated syntax.
+Scala 3.3.8 uses `given` to define contextual instances, `using` to declare
+context requirements, and `summon` to retrieve an instance from the current scope.
 
 ```scala
 trait Show[A]:
@@ -198,7 +198,7 @@ givens explicitly, and avoid broad conversions.
 
 ## 3. Extension Methods
 
-Extension methods replace most Scala 2 implicit-class use cases:
+Extension methods add operations to existing types without changing those types:
 
 ```scala
 extension (text: String)
@@ -312,32 +312,20 @@ special support, as it does for `CanEqual`.
 
 ---
 
-## 8. Migration Notes
+## 8. Scala 3.3.8 Conventions
 
-### 8.1 Common Syntax Changes
+### 8.1 Syntax Checklist
 
-| Scala 2 idiom | Scala 3.3.8 form |
-|---|---|
-| `implicit val` or `implicit object` | `given` |
-| implicit parameter list | `using` clause |
-| `implicitly[A]` | `summon[A]` |
-| implicit class | `extension` method |
-| `import a._` / `import a.{x => y}` | `import a.*` / `import a.{x as y}` |
-| `List[A]` wildcard written as `List[_]` | `List[?]` |
-| `values: _*` | `values*` |
-| `method _` eta expansion | `method` |
-| `object Main extends App` | `@main def mainName(): Unit` |
-| procedure syntax without `=` | add `=` and preferably an explicit result type |
-| `do ... while` | a `while` whose condition is a block |
-
-Old implicit syntax remains available for migration in many cases, but its
-resolution and import behavior follows Scala 3 rules. General type projection,
-existential types, `DelayedInit`, early initializers, class shadowing, weak
-conformance, symbol literals, auto-application, auto-tupling, wildcard
-initializers, procedure syntax, and `do-while` should not appear in new Scala
-3.3.8 code. Package objects are superseded by top-level definitions, and XML
-literals require the separate Scala XML library. `private[this]` and nonlocal
-returns are deprecated.
+- Use `given` for contextual instances and `using` for context parameters.
+- Use `summon[A]` to retrieve an `A` instance from the current scope.
+- Use `extension` to add operations to existing types.
+- Write wildcard types as `List[?]` and vararg splices as `values*`.
+- Use `import a.*` for wildcard imports and `import a.{x as y}` for renaming.
+- Pass a method directly as a function value without an extra eta-expansion marker.
+- Use `@main` for a small program entry point.
+- Give method bodies an `=` and give public methods an explicit result type.
+- Use a `while` with a block condition when the body must run before the check.
+- Put shared definitions at the top level; XML literals require the separate Scala XML library.
 
 ### 8.2 Additional Scala 3.3.8 Features
 
@@ -375,7 +363,7 @@ capabilities rather than new core Scala 3 syntax.
 4. Create an opaque `Email` type that validates the presence of `@`.
 5. Define and use a union type, an intersection type, and a match type.
 6. Derive a small type class through `Mirror`, then test product and sum types.
-7. Migrate one legacy implicit-class example from Part 8 to Scala 3.3.8 syntax.
+7. Build composable formatting utilities with `given`, `using`, and `extension`.
 
 ---
 

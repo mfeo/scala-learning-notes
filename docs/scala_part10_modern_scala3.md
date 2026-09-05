@@ -12,7 +12,7 @@
 5. [Opaque Types](#5-opaque-types)
 6. [Exports](#6-exports)
 7. [Derives](#7-derives)
-8. [遷移注意事項](#8-遷移注意事項)
+8. [Scala 3.3.8 慣例](#8-scala-338-慣例)
 9. [實作練習](#9-實作練習)
 
 ---
@@ -123,8 +123,8 @@ val identity: [A] => A => A =
 
 ## 2. given 與 using 的上下文抽象
 
-Scala 2 常使用 `implicit val`、`implicit def` 與 implicit parameter list；
-Scala 3.3.8 以個別語法清楚表達各種用途。
+Scala 3.3.8 使用 `given` 定義上下文實例、`using` 宣告上下文需求，並以 `summon`
+取得目前作用域中的實例。
 
 ```scala
 trait Show[A]:
@@ -190,7 +190,7 @@ Given 應放在所提供型別或型別類別的 companion object 附近、明�
 
 ## 3. Extension Methods
 
-Extension method 取代大多數 Scala 2 implicit class 使用場景：
+Extension method 讓既有型別取得新操作，而不需要修改原始型別：
 
 ```scala
 extension (text: String)
@@ -299,30 +299,20 @@ case class User(id: String, name: String) derives JsonEncoder
 
 ---
 
-## 8. 遷移注意事項
+## 8. Scala 3.3.8 慣例
 
-### 8.1 常見語法變更
+### 8.1 語法檢查表
 
-| Scala 2 寫法 | Scala 3.3.8 寫法 |
-|---|---|
-| `implicit val` 或 `implicit object` | `given` |
-| implicit parameter list | `using` clause |
-| `implicitly[A]` | `summon[A]` |
-| implicit class | `extension` method |
-| `import a._`／`import a.{x => y}` | `import a.*`／`import a.{x as y}` |
-| `List[_]` 型別萬用字元 | `List[?]` |
-| `values: _*` | `values*` |
-| `method _` eta expansion | `method` |
-| `object Main extends App` | `@main def mainName(): Unit` |
-| 省略 `=` 的程序語法 | 加上 `=`，並最好明確標示回傳型別 |
-| `do ... while` | 條件為程式區塊的 `while` |
-
-為了遷移，許多舊式 implicit 語法仍可使用，但解析與匯入會遵循 Scala 3 規則。新
-Scala 3.3.8 程式碼不應使用一般型別投影、存在型別、`DelayedInit`、early
-initializer、class shadowing、weak conformance、symbol literal、auto-application、
-auto-tupling、wildcard initializer、程序語法或 `do-while`。Package object 已由
-頂層定義取代；XML literal 需要獨立的 Scala XML 函式庫。`private[this]` 與
-nonlocal return 已棄用。
+- 使用 `given` 定義上下文實例，使用 `using` 宣告上下文參數。
+- 使用 `summon[A]` 取得作用域中的 `A` 實例。
+- 使用 `extension` 為既有型別提供新操作。
+- 萬用字元型別寫成 `List[?]`，可變參數展開寫成 `values*`。
+- 匯入萬用成員時使用 `import a.*`，重新命名時使用 `import a.{x as y}`。
+- 方法可直接當成函式值傳遞，不需要額外的 eta expansion 標記。
+- 使用 `@main` 定義小型程式進入點。
+- 方法本體使用 `=`，並在公開方法上標示回傳型別。
+- 需要先執行本體再判斷時，使用條件為程式區塊的 `while`。
+- 共用定義可以直接放在頂層；XML literal 需要獨立的 Scala XML 函式庫。
 
 ### 8.2 其他 Scala 3.3.8 功能
 
@@ -356,7 +346,7 @@ Loop（讀取、求值、輸出循環的互動式提示環境）。這些是版�
 4. 建立驗證 `@` 的 opaque `Email` 型別。
 5. 定義並使用聯集型別、交集型別及 match type。
 6. 透過 `Mirror` 衍生小型型別類別，並測試 product 與 sum type。
-7. 把第八部分的一個舊式 implicit class 範例遷移成 Scala 3.3.8 語法。
+7. 使用 `given`、`using` 與 `extension` 建立一組可組合的格式化工具。
 
 ---
 
